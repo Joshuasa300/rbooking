@@ -922,9 +922,12 @@ export default function App() {
           {models.map(m => (
             <button key={m.name} className="model-card"
               onClick={() => { set({ model: m.name, repairIdx: null }); go(4); }}>
-              {isSamsung
-                ? <SamsungSVG type={m.svgType || 'std'} selected={false} />
-                : <PhoneStage {...m.svgProps} svgHeight={72} />}
+              {isSamsung && m.img
+                ? <img src={m.img} alt={m.name} className="model-photo"
+                    onError={e => { if (m.imgFb && e.target.src !== m.imgFb) e.target.src = m.imgFb; }} />
+                : isSamsung
+                  ? <SamsungSVG type={m.svgType || 'std'} selected={false} />
+                  : <PhoneStage {...m.svgProps} svgHeight={72} />}
               <div className={`model-name${!isSamsung ? ' iphone-name' : ''}`}>{m.name}</div>
             </button>
           ))}
