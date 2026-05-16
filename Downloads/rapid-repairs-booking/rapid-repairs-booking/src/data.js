@@ -240,7 +240,7 @@ export const genericRepairs = {
       { model: 'Pixel 6a', price: 189 }, { model: 'Pixel 5 / 5a', price: 190 }, { model: 'Pixel 4 / 4 XL', price: 190 },
       { model: 'Pixel 4a / 4a 5G', price: 199 }, { model: 'Pixel 3 range', price: 149 }, { model: 'Pixel 2 / XL / 1', price: 139 },
     ]},
-    { name: 'Screen – OLED', sub: 'Aftermarket OLED panel', time: '45–60 min', price: null, priceStr: 'From £139', hasModels: true, models: [
+    { name: 'Screen – OLED', sub: 'Aftermarket OLED panel · fingerprint sensor may not work after install', time: '45–60 min', price: null, priceStr: 'From £139', hasModels: true, models: [
       { model: 'Pixel 9 Pro XL', price: 249 }, { model: 'Pixel 9 Pro', price: 209 }, { model: 'Pixel 9', price: 189 },
       { model: 'Pixel 8 Pro', price: 189 }, { model: 'Pixel 8 / 8a', price: 169 }, { model: 'Pixel 7 Pro', price: 139 },
       { model: 'Pixel 7 / 7a', price: 149 }, { model: 'Pixel 6 Pro', price: 139 }, { model: 'Pixel 6', price: 139 },
