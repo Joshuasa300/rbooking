@@ -300,6 +300,18 @@ textarea { resize: vertical; min-height: 80px; }
   font-size: 12px; color: var(--text-muted); flex-wrap: wrap;
 }
 
+/* ── Google Pixel phone palette ─────────────────────────────────────────── */
+.p-body   { fill: #d9d2c2; } .p-body-2  { fill: #b8c4d0; } .p-body-3  { fill: #2a3340; }
+.p-body-4 { fill: #c9b899; } .p-body-5  { fill: #e7dfd0; } .p-body-6  { fill: #a8a89a; }
+.p-body-7 { fill: #6b5d4f; } .p-body-8  { fill: #f0c898; } .p-body-9  { fill: #87a098; }
+.p-body-10{ fill: #d0d4dc; } .p-body-11 { fill: #1a1f28; }
+.p-edge   { stroke: rgba(0,0,0,.10); stroke-width: 0.8; fill: none; }
+.p-bar    { fill: #1a1f28; } .p-bar-trim { fill: #b5bac4; }
+.p-glass  { fill: #0c1218; } .p-lens    { fill: #2a3340; }
+.p-iris   { fill: #6da3c7; } .p-iris-2  { fill: #c98a4b; }
+.p-flash  { fill: #f4e6c8; } .p-fp      { fill: rgba(0,0,0,.18); }
+.p-shadow { fill: rgba(13,32,49,.06); }
+
 /* ── iPhone phone stage (diamond bg + SVG) ──────────────────────────────── */
 .phone-stage {
   position: relative;

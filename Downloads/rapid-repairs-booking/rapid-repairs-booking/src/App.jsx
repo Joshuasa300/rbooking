@@ -96,6 +96,15 @@ function PixelDefs() {
   return (
     <svg width="0" height="0" style={{ position: 'absolute' }} aria-hidden="true">
       <defs>
+        <linearGradient id="pxSheen" x1="0" x2="0" y1="0" y2="1">
+          <stop offset="0" stopColor="#ffffff" stopOpacity=".18"/>
+          <stop offset=".5" stopColor="#ffffff" stopOpacity="0"/>
+          <stop offset="1" stopColor="#000000" stopOpacity=".06"/>
+        </linearGradient>
+        <linearGradient id="pxBarSheen" x1="0" x2="0" y1="0" y2="1">
+          <stop offset="0" stopColor="#ffffff" stopOpacity=".22"/>
+          <stop offset="1" stopColor="#000000" stopOpacity=".15"/>
+        </linearGradient>
         <symbol id="px9proxl" viewBox="0 0 120 220">
           <rect x="14" y="8" width="92" height="204" rx="20" className="p-body-10"/>
           <rect x="14" y="8" width="92" height="204" rx="20" fill="url(#pxSheen)"/>
@@ -346,17 +355,6 @@ function PixelDefs() {
 function PixelPhoneSVG({ svgId }) {
   return (
     <svg viewBox="0 0 120 220" style={{ height: 88, width: 'auto', display: 'block' }}>
-      <defs>
-        <linearGradient id="pxSheen" x1="0" x2="0" y1="0" y2="1">
-          <stop offset="0" stopColor="#ffffff" stopOpacity=".18"/>
-          <stop offset=".5" stopColor="#ffffff" stopOpacity="0"/>
-          <stop offset="1" stopColor="#000000" stopOpacity=".06"/>
-        </linearGradient>
-        <linearGradient id="pxBarSheen" x1="0" x2="0" y1="0" y2="1">
-          <stop offset="0" stopColor="#ffffff" stopOpacity=".22"/>
-          <stop offset="1" stopColor="#000000" stopOpacity=".15"/>
-        </linearGradient>
-      </defs>
       <use href={`#${svgId}`} />
     </svg>
   );
