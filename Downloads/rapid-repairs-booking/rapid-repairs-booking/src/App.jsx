@@ -519,8 +519,14 @@ export default function App() {
     paidAmount: null, bookingRef: null,
   });
 
+  const [navLock, setNavLock] = useState(false);
+
   const set = (patch) => setSt(s => ({ ...s, ...patch }));
-  const go  = (step)  => setSt(s => ({ ...s, step }));
+  const go  = (step)  => {
+    setNavLock(true);
+    setSt(s => ({ ...s, step }));
+    setTimeout(() => setNavLock(false), 350);
+  };
 
   // ── Repair helpers ─────────────────────────────────────────────────────────
   function getRepairs() {
@@ -611,7 +617,7 @@ export default function App() {
         <ProgressBar labels={labels} current={current} />
       )}
 
-      <div className="step-body">
+      <div className="step-body" style={navLock ? { pointerEvents: 'none', userSelect: 'none' } : {}}>
         {st.step === 0 && <StepCategory />}
         {st.step === 1 && <StepDevice />}
         {st.step === 2 && (
