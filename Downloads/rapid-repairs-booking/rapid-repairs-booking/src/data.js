@@ -197,6 +197,39 @@ export const modelRepairs = {
   'A10': [{ name: 'Screen replacement', time: '45–75 min', price: 115 }, { name: 'Battery replacement', time: '30 min', price: 65 }, { name: 'Motherboard / water damage', time: '4–7 days', price: null, quote: true }],
 };
 
+// ── Per-model Pixel repairs ──────────────────────────────────────────────────
+const px = (orig, oled, batt) => [
+  { name: 'Screen – Original', sub: 'OEM-matched panel',          time: '45–60 min', price: orig },
+  ...(oled ? [{ name: 'Screen – OLED', sub: 'High-quality aftermarket OLED', time: '45–60 min', price: oled }] : []),
+  { name: 'Battery replacement',                                    time: '2–3 hrs',   price: batt },
+  { name: 'Motherboard / water damage',                             time: '4–7 days',  price: null, quote: true },
+];
+
+export const pixelRepairs = {
+  'Pixel 9 Pro XL': px(279, 249, 119),
+  'Pixel 9 Pro':    px(249, 209, 119),
+  'Pixel 9':        px(215, 189, 109),
+  'Pixel 8 Pro':    px(225, 189,  99),
+  'Pixel 8a':       px(199, 169,  89),
+  'Pixel 8':        px(199, 169,  89),
+  'Pixel 7 Pro':    px(199, 139,  89),
+  'Pixel 7a':       px(179, 149,  89),
+  'Pixel 7':        px(179, 139,  89),
+  'Pixel 6 Pro':    px(199, 139,  79),
+  'Pixel 6a':       px(189, 139,  79),
+  'Pixel 6':        px(179, 139,  69),
+  'Pixel 5a':       px(190, 175,  69),
+  'Pixel 5':        px(190, 175,  69),
+  'Pixel 4a 5G':    px(199, null, 69),
+  'Pixel 4a':       px(170, null, 69),
+  'Pixel 4 XL':     px(190, null, 69),
+  'Pixel 4':        px(180, 165,  69),
+  'Pixel 3a':       px(149, null, 69),
+  'Pixel 3':        px(149, null, 69),
+  'Pixel 2 XL':     px(139, null, 69),
+  'Pixel 2':        px(139, null, 69),
+};
+
 // ── Fallback repairs for non-model-picker devices ────────────────────────────
 export const genericRepairs = {
   google: [

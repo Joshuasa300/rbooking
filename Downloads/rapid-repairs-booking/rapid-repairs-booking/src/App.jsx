@@ -6,7 +6,7 @@ import {
   categories, devicesByCat,
   iphoneSeries, samsungSeries,
   iphoneModels, samsungModels,
-  modelRepairs, genericRepairs,
+  modelRepairs, pixelRepairs, genericRepairs,
   getAvailableSlots,
 } from './data';
 import './styles.css';
@@ -529,7 +529,7 @@ export default function App() {
     if (device === 'macbook')  return [];
     if (!model)                return [];
     if (device === 'iphone' || device === 'samsung') return modelRepairs[model] || [];
-    if (device === 'google')   return genericRepairs.google || [];
+    if (device === 'google')   return pixelRepairs[model] || genericRepairs.google || [];
     return genericRepairs[device] || [];
   }
 
