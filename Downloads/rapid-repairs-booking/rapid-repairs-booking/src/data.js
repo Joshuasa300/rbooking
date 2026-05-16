@@ -50,9 +50,8 @@ export const iphoneModels = {
     { name: 'iPhone 12',  year: '2020' }, { name: 'iPhone 11',  year: '2019' },
     { name: 'iPhone XS',  year: '2018' }, { name: 'iPhone XR',  year: '2018' },
     { name: 'iPhone X',   year: '2017' }, { name: 'iPhone 8',   year: '2017' },
-    { name: 'iPhone 7',   year: '2016' }, { name: 'iPhone 6s+', year: '2015' },
-    { name: 'iPhone 6s',  year: '2015' }, { name: 'iPhone 6+',  year: '2014' },
-    { name: 'iPhone 6',   year: '2014' },
+    { name: 'iPhone 7',   year: '2016' },
+    { name: 'iPhone 6s',  year: '2015' }, { name: 'iPhone 6',   year: '2014' },
   ],
   pro: [
     { name: 'iPhone 16 Pro', year: '2024' }, { name: 'iPhone 15 Pro', year: '2023' },
@@ -72,6 +71,10 @@ export const iphoneModels = {
     { name: 'iPhone 14 Plus',  year: '2022', svgType: 'plus' },
     { name: 'iPhone 13 mini',  year: '2021', svgType: 'mini' },
     { name: 'iPhone 12 mini',  year: '2020', svgType: 'mini' },
+    { name: 'iPhone 8+',       year: '2017', svgType: 'plus' },
+    { name: 'iPhone 7+',       year: '2016', svgType: 'plus' },
+    { name: 'iPhone 6s+',      year: '2015', svgType: 'plus' },
+    { name: 'iPhone 6+',       year: '2014', svgType: 'plus' },
   ],
 };
 export const samsungModels = {
@@ -136,6 +139,8 @@ export const modelRepairs = {
   'iPhone 14 Plus':   [{ name: 'Screen – Standard', sub: 'LCD/aftermarket OLED', time: '1–2 hrs', price: 129 }, { name: 'Screen – Premium', sub: 'Soft OLED', time: '1–2 hrs', price: 219 }, { name: 'Battery replacement', time: '1–2 hrs', price: 85 }, { name: 'Charging port repair', time: '2–3 hrs', price: 85 }, { name: 'Back glass repair', time: '60–90 min', price: 119 }, { name: 'Camera glass', time: '45–60 min', price: 65 }, { name: 'Motherboard / water damage', time: '4–7 days', price: null, quote: true }],
   'iPhone 13 mini':   [{ name: 'Screen – Standard', time: '1–2 hrs', price: 125 }, { name: 'Screen – Premium', sub: 'Soft OLED', time: '1–2 hrs', price: 199 }, { name: 'Battery replacement', time: '1–2 hrs', price: 75 }, { name: 'Charging port repair', time: '2–3 hrs', price: 70 }, { name: 'Back glass repair', time: '60–90 min', price: 99 }, { name: 'Motherboard / water damage', time: '4–7 days', price: null, quote: true }],
   'iPhone 12 mini':   [{ name: 'Screen – Standard', time: '1–2 hrs', price: 109 }, { name: 'Screen – Premium', sub: 'Soft OLED', time: '1–2 hrs', price: 165 }, { name: 'Battery replacement', time: '1–2 hrs', price: 69 }, { name: 'Charging port repair', time: '2–3 hrs', price: 75 }, { name: 'Back glass repair', time: '60–90 min', price: 89 }, { name: 'Motherboard / water damage', time: '4–7 days', price: null, quote: true }],
+  'iPhone 8+':        [{ name: 'Screen replacement', time: '1–2 hrs', price: 50 }, { name: 'Battery replacement', time: '1–2 hrs', price: 49 }, { name: 'Charging port repair', time: '2–3 hrs', price: 55 }, { name: 'Motherboard / water damage', time: '4–7 days', price: null, quote: true }],
+  'iPhone 7+':        [{ name: 'Screen replacement', time: '1–2 hrs', price: 45 }, { name: 'Battery replacement', time: '1–2 hrs', price: 49 }, { name: 'Charging port repair', time: '2–3 hrs', price: 49 }, { name: 'Motherboard / water damage', time: '4–7 days', price: null, quote: true }],
   // Samsung S-series
   'S25 Ultra':  [{ name: 'Screen replacement', time: '45–75 min', price: 299 }, { name: 'Battery replacement', time: '30 min', price: 65 }, { name: 'Charging port repair', time: '2–3 hrs', price: 99 }, { name: 'Motherboard / water damage', time: '4–7 days', price: null, quote: true }],
   'S25 Plus':   [{ name: 'Screen replacement', time: '45–75 min', price: 289 }, { name: 'Battery replacement', time: '30 min', price: 65 }, { name: 'Charging port repair', time: '2–3 hrs', price: 89 }, { name: 'Motherboard / water damage', time: '4–7 days', price: null, quote: true }],
