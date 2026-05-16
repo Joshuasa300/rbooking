@@ -92,19 +92,270 @@ function SamsungSVG({ type, selected }) {
   );
 }
 
-function PixelSVG({ gen, selected }) {
-  const stroke = selected ? 'var(--color-text-primary)' : 'var(--color-border-secondary)';
-  const fill   = selected ? 'var(--color-background-secondary)' : 'var(--color-background-primary)';
-  const w = gen >= 8 ? 36 : 34, h = gen >= 8 ? 72 : 66;
-  const rx = gen >= 6 ? 10 : 8, cw = gen >= 7 ? 14 : 10, ch = gen >= 8 ? 22 : 16, dual = gen >= 7;
+function PixelDefs() {
   return (
-    <svg width={w} height={h} viewBox={`0 0 ${w} ${h}`} fill="none">
-      <rect x="1" y="1" width={w-2} height={h-2} rx={rx} fill={fill} stroke={stroke} strokeWidth="1.5"/>
-      <rect x={(w-10)/2} y="4" width="10" height="3" rx="1.5" fill={stroke} opacity="0.4"/>
-      <rect x={(w-cw)/2} y="9" width={cw} height={ch} rx="5" fill="none" stroke={stroke} strokeWidth="1" opacity="0.7"/>
-      <circle cx={w/2} cy={9+ch/2-(dual?3:0)} r="3" fill={stroke} opacity="0.3"/>
-      {dual && <circle cx={w/2} cy={9+ch/2+4} r="2.5" fill={stroke} opacity="0.3"/>}
-      <line x1={w/2-5} y1={h-6} x2={w/2+5} y2={h-6} stroke={stroke} strokeWidth="1.5" strokeLinecap="round" opacity="0.35"/>
+    <svg width="0" height="0" style={{ position: 'absolute' }} aria-hidden="true">
+      <defs>
+        <linearGradient id="pxSheen" x1="0" x2="0" y1="0" y2="1">
+          <stop offset="0" stopColor="#ffffff" stopOpacity=".18"/>
+          <stop offset=".5" stopColor="#ffffff" stopOpacity="0"/>
+          <stop offset="1" stopColor="#000000" stopOpacity=".06"/>
+        </linearGradient>
+        <linearGradient id="pxBarSheen" x1="0" x2="0" y1="0" y2="1">
+          <stop offset="0" stopColor="#ffffff" stopOpacity=".22"/>
+          <stop offset="1" stopColor="#000000" stopOpacity=".15"/>
+        </linearGradient>
+        <symbol id="px9proxl" viewBox="0 0 120 220">
+          <rect x="14" y="8" width="92" height="204" rx="20" className="p-body-10"/>
+          <rect x="14" y="8" width="92" height="204" rx="20" fill="url(#pxSheen)"/>
+          <rect x="14" y="8" width="92" height="204" rx="20" className="p-edge"/>
+          <rect x="24" y="26" width="72" height="30" rx="15" className="p-bar"/>
+          <rect x="24" y="26" width="72" height="30" rx="15" fill="url(#pxBarSheen)"/>
+          <circle cx="38" cy="41" r="7" className="p-lens"/><circle cx="38" cy="41" r="3" className="p-iris"/>
+          <circle cx="58" cy="41" r="7" className="p-lens"/><circle cx="58" cy="41" r="3" className="p-iris"/>
+          <circle cx="78" cy="41" r="7" className="p-lens"/><circle cx="78" cy="41" r="3" className="p-iris"/>
+          <circle cx="91" cy="41" r="2.5" className="p-flash"/>
+        </symbol>
+        <symbol id="px9pro" viewBox="0 0 120 220">
+          <rect x="18" y="14" width="84" height="192" rx="18" className="p-body-5"/>
+          <rect x="18" y="14" width="84" height="192" rx="18" fill="url(#pxSheen)"/>
+          <rect x="18" y="14" width="84" height="192" rx="18" className="p-edge"/>
+          <rect x="26" y="30" width="68" height="28" rx="14" className="p-bar"/>
+          <rect x="26" y="30" width="68" height="28" rx="14" fill="url(#pxBarSheen)"/>
+          <circle cx="38" cy="44" r="6.5" className="p-lens"/><circle cx="38" cy="44" r="2.8" className="p-iris"/>
+          <circle cx="56" cy="44" r="6.5" className="p-lens"/><circle cx="56" cy="44" r="2.8" className="p-iris"/>
+          <circle cx="74" cy="44" r="6.5" className="p-lens"/><circle cx="74" cy="44" r="2.8" className="p-iris"/>
+          <circle cx="87" cy="44" r="2.3" className="p-flash"/>
+        </symbol>
+        <symbol id="px9" viewBox="0 0 120 220">
+          <rect x="20" y="16" width="80" height="188" rx="18" className="p-body-8"/>
+          <rect x="20" y="16" width="80" height="188" rx="18" fill="url(#pxSheen)"/>
+          <rect x="20" y="16" width="80" height="188" rx="18" className="p-edge"/>
+          <rect x="30" y="32" width="60" height="26" rx="13" className="p-bar"/>
+          <rect x="30" y="32" width="60" height="26" rx="13" fill="url(#pxBarSheen)"/>
+          <circle cx="44" cy="45" r="6" className="p-lens"/><circle cx="44" cy="45" r="2.5" className="p-iris"/>
+          <circle cx="62" cy="45" r="6" className="p-lens"/><circle cx="62" cy="45" r="2.5" className="p-iris"/>
+          <circle cx="80" cy="45" r="2.2" className="p-flash"/>
+        </symbol>
+        <symbol id="px8pro" viewBox="0 0 120 220">
+          <rect x="18" y="14" width="84" height="192" rx="18" className="p-body-9"/>
+          <rect x="18" y="14" width="84" height="192" rx="18" fill="url(#pxSheen)"/>
+          <rect x="18" y="14" width="84" height="192" rx="18" className="p-edge"/>
+          <rect x="18" y="32" width="84" height="26" className="p-bar"/>
+          <rect x="18" y="32" width="84" height="26" fill="url(#pxBarSheen)"/>
+          <rect x="28" y="36" width="46" height="18" rx="9" className="p-glass"/>
+          <circle cx="36" cy="45" r="4.5" className="p-lens"/><circle cx="36" cy="45" r="1.8" className="p-iris"/>
+          <circle cx="50" cy="45" r="4.5" className="p-lens"/><circle cx="50" cy="45" r="1.8" className="p-iris"/>
+          <circle cx="64" cy="45" r="4.5" className="p-lens"/><circle cx="64" cy="45" r="1.8" className="p-iris"/>
+          <circle cx="84" cy="45" r="3" className="p-lens"/>
+          <circle cx="94" cy="45" r="2" className="p-flash"/>
+        </symbol>
+        <symbol id="px8a" viewBox="0 0 120 220">
+          <rect x="20" y="16" width="80" height="188" rx="20" className="p-body-6"/>
+          <rect x="20" y="16" width="80" height="188" rx="20" fill="url(#pxSheen)"/>
+          <rect x="20" y="16" width="80" height="188" rx="20" className="p-edge"/>
+          <rect x="26" y="34" width="68" height="22" rx="11" className="p-bar"/>
+          <rect x="26" y="34" width="68" height="22" rx="11" fill="url(#pxBarSheen)"/>
+          <circle cx="40" cy="45" r="5" className="p-lens"/><circle cx="40" cy="45" r="2" className="p-iris"/>
+          <circle cx="56" cy="45" r="5" className="p-lens"/><circle cx="56" cy="45" r="2" className="p-iris"/>
+          <circle cx="80" cy="45" r="2" className="p-flash"/>
+        </symbol>
+        <symbol id="px8" viewBox="0 0 120 220">
+          <rect x="20" y="16" width="80" height="188" rx="18" className="p-body-4"/>
+          <rect x="20" y="16" width="80" height="188" rx="18" fill="url(#pxSheen)"/>
+          <rect x="20" y="16" width="80" height="188" rx="18" className="p-edge"/>
+          <rect x="20" y="32" width="80" height="24" className="p-bar"/>
+          <rect x="20" y="32" width="80" height="24" fill="url(#pxBarSheen)"/>
+          <rect x="30" y="36" width="34" height="16" rx="8" className="p-glass"/>
+          <circle cx="38" cy="44" r="4.2" className="p-lens"/><circle cx="38" cy="44" r="1.7" className="p-iris"/>
+          <circle cx="56" cy="44" r="4.2" className="p-lens"/><circle cx="56" cy="44" r="1.7" className="p-iris"/>
+          <circle cx="80" cy="44" r="2" className="p-flash"/>
+        </symbol>
+        <symbol id="px7pro" viewBox="0 0 120 220">
+          <rect x="18" y="14" width="84" height="192" rx="16" className="p-body-3"/>
+          <rect x="18" y="14" width="84" height="192" rx="16" fill="url(#pxSheen)"/>
+          <rect x="18" y="14" width="84" height="192" rx="16" className="p-edge"/>
+          <rect x="18" y="30" width="84" height="28" className="p-bar-trim"/>
+          <rect x="18" y="30" width="84" height="28" fill="url(#pxBarSheen)"/>
+          <rect x="26" y="36" width="32" height="16" rx="8" className="p-glass"/>
+          <circle cx="34" cy="44" r="4.5" className="p-lens"/><circle cx="34" cy="44" r="1.8" className="p-iris"/>
+          <circle cx="50" cy="44" r="4.5" className="p-lens"/><circle cx="50" cy="44" r="1.8" className="p-iris"/>
+          <rect x="64" y="36" width="22" height="16" rx="8" className="p-glass"/>
+          <circle cx="75" cy="44" r="5" className="p-lens"/><circle cx="75" cy="44" r="2.2" className="p-iris-2"/>
+          <circle cx="93" cy="44" r="2" className="p-flash"/>
+        </symbol>
+        <symbol id="px7a" viewBox="0 0 120 220">
+          <rect x="20" y="16" width="80" height="188" rx="18" className="p-body-2"/>
+          <rect x="20" y="16" width="80" height="188" rx="18" fill="url(#pxSheen)"/>
+          <rect x="20" y="16" width="80" height="188" rx="18" className="p-edge"/>
+          <rect x="20" y="32" width="80" height="24" className="p-bar-trim"/>
+          <rect x="20" y="32" width="80" height="24" fill="url(#pxBarSheen)"/>
+          <rect x="30" y="36" width="34" height="16" rx="8" className="p-glass"/>
+          <circle cx="38" cy="44" r="4.2" className="p-lens"/><circle cx="38" cy="44" r="1.6" className="p-iris"/>
+          <circle cx="56" cy="44" r="4.2" className="p-lens"/><circle cx="56" cy="44" r="1.6" className="p-iris"/>
+          <circle cx="80" cy="44" r="2" className="p-flash"/>
+        </symbol>
+        <symbol id="px7" viewBox="0 0 120 220">
+          <rect x="20" y="16" width="80" height="188" rx="18" className="p-body-5"/>
+          <rect x="20" y="16" width="80" height="188" rx="18" fill="url(#pxSheen)"/>
+          <rect x="20" y="16" width="80" height="188" rx="18" className="p-edge"/>
+          <rect x="20" y="32" width="80" height="24" className="p-bar-trim"/>
+          <rect x="20" y="32" width="80" height="24" fill="url(#pxBarSheen)"/>
+          <rect x="30" y="36" width="34" height="16" rx="8" className="p-glass"/>
+          <circle cx="38" cy="44" r="4.2" className="p-lens"/><circle cx="38" cy="44" r="1.6" className="p-iris"/>
+          <circle cx="56" cy="44" r="4.2" className="p-lens"/><circle cx="56" cy="44" r="1.6" className="p-iris"/>
+          <circle cx="80" cy="44" r="2" className="p-flash"/>
+        </symbol>
+        <symbol id="px6pro" viewBox="0 0 120 220">
+          <rect x="18" y="14" width="84" height="192" rx="16" className="p-body-11"/>
+          <rect x="18" y="14" width="84" height="192" rx="16" fill="url(#pxSheen)"/>
+          <rect x="18" y="14" width="84" height="192" rx="16" className="p-edge"/>
+          <path d="M18,30 L102,30 L102,58 L18,58 Z" fill="#f0d8a8"/>
+          <rect x="18" y="14" width="84" height="16" fill="#1a1f28"/>
+          <rect x="18" y="30" width="84" height="28" fill="url(#pxBarSheen)" opacity=".4"/>
+          <rect x="18" y="34" width="84" height="20" className="p-bar"/>
+          <rect x="28" y="38" width="34" height="12" rx="6" className="p-glass"/>
+          <circle cx="36" cy="44" r="4" className="p-lens"/><circle cx="36" cy="44" r="1.4" className="p-iris"/>
+          <circle cx="54" cy="44" r="4" className="p-lens"/><circle cx="54" cy="44" r="1.4" className="p-iris"/>
+          <rect x="68" y="38" width="22" height="12" rx="6" className="p-glass"/>
+          <circle cx="79" cy="44" r="4.2" className="p-lens"/><circle cx="79" cy="44" r="1.6" className="p-iris-2"/>
+          <circle cx="94" cy="44" r="1.6" className="p-flash"/>
+        </symbol>
+        <symbol id="px6a" viewBox="0 0 120 220">
+          <rect x="20" y="16" width="80" height="188" rx="16" className="p-body-3"/>
+          <rect x="20" y="16" width="80" height="188" rx="16" fill="url(#pxSheen)"/>
+          <rect x="20" y="16" width="80" height="188" rx="16" className="p-edge"/>
+          <rect x="20" y="16" width="80" height="22" fill="#0d1218"/>
+          <rect x="20" y="34" width="80" height="22" className="p-bar"/>
+          <rect x="20" y="34" width="80" height="22" fill="url(#pxBarSheen)" opacity=".5"/>
+          <rect x="30" y="38" width="34" height="14" rx="7" className="p-glass"/>
+          <circle cx="38" cy="45" r="4" className="p-lens"/><circle cx="38" cy="45" r="1.4" className="p-iris"/>
+          <circle cx="56" cy="45" r="4" className="p-lens"/><circle cx="56" cy="45" r="1.4" className="p-iris"/>
+          <circle cx="80" cy="45" r="1.8" className="p-flash"/>
+        </symbol>
+        <symbol id="px6" viewBox="0 0 120 220">
+          <rect x="20" y="16" width="80" height="188" rx="16" className="p-body-8"/>
+          <rect x="20" y="16" width="80" height="188" rx="16" fill="url(#pxSheen)"/>
+          <rect x="20" y="16" width="80" height="188" rx="16" className="p-edge"/>
+          <rect x="20" y="16" width="80" height="20" fill="#f7e3bd"/>
+          <rect x="20" y="36" width="80" height="22" className="p-bar"/>
+          <rect x="30" y="40" width="34" height="14" rx="7" className="p-glass"/>
+          <circle cx="38" cy="47" r="4" className="p-lens"/><circle cx="38" cy="47" r="1.4" className="p-iris"/>
+          <circle cx="56" cy="47" r="4" className="p-lens"/><circle cx="56" cy="47" r="1.4" className="p-iris"/>
+          <circle cx="80" cy="47" r="1.8" className="p-flash"/>
+        </symbol>
+        <symbol id="px5a" viewBox="0 0 120 220">
+          <rect x="20" y="16" width="80" height="188" rx="18" className="p-body-3"/>
+          <rect x="20" y="16" width="80" height="188" rx="18" fill="url(#pxSheen)"/>
+          <rect x="20" y="16" width="80" height="188" rx="18" className="p-edge"/>
+          <rect x="28" y="30" width="26" height="26" rx="6" className="p-bar"/>
+          <circle cx="36" cy="38" r="4" className="p-lens"/><circle cx="36" cy="38" r="1.5" className="p-iris"/>
+          <circle cx="46" cy="38" r="3" className="p-lens"/><circle cx="46" cy="38" r="1.1" className="p-iris"/>
+          <circle cx="36" cy="49" r="1.8" className="p-flash"/>
+          <circle cx="46" cy="49" r="1.4" className="p-flash"/>
+          <circle cx="60" cy="110" r="9" className="p-fp"/>
+        </symbol>
+        <symbol id="px5" viewBox="0 0 120 220">
+          <rect x="20" y="16" width="80" height="188" rx="18" className="p-body-6"/>
+          <rect x="20" y="16" width="80" height="188" rx="18" fill="url(#pxSheen)"/>
+          <rect x="20" y="16" width="80" height="188" rx="18" className="p-edge"/>
+          <rect x="28" y="30" width="26" height="26" rx="6" className="p-bar"/>
+          <circle cx="36" cy="38" r="4" className="p-lens"/><circle cx="36" cy="38" r="1.5" className="p-iris"/>
+          <circle cx="46" cy="38" r="3" className="p-lens"/><circle cx="46" cy="38" r="1.1" className="p-iris"/>
+          <circle cx="36" cy="49" r="1.8" className="p-flash"/>
+          <circle cx="46" cy="49" r="1.4" className="p-flash"/>
+          <circle cx="60" cy="110" r="9" className="p-fp"/>
+        </symbol>
+        <symbol id="px4a5g" viewBox="0 0 120 220">
+          <rect x="20" y="16" width="80" height="188" rx="18" className="p-body-11"/>
+          <rect x="20" y="16" width="80" height="188" rx="18" fill="url(#pxSheen)"/>
+          <rect x="20" y="16" width="80" height="188" rx="18" className="p-edge"/>
+          <rect x="28" y="30" width="26" height="26" rx="6" className="p-bar"/>
+          <circle cx="36" cy="38" r="4" className="p-lens"/><circle cx="36" cy="38" r="1.5" className="p-iris"/>
+          <circle cx="46" cy="38" r="3" className="p-lens"/><circle cx="46" cy="38" r="1.1" className="p-iris"/>
+          <circle cx="36" cy="49" r="1.8" className="p-flash"/>
+          <circle cx="46" cy="49" r="1.4" className="p-flash"/>
+          <circle cx="60" cy="110" r="9" stroke="rgba(255,255,255,.4)" strokeWidth="1.5" fill="none"/>
+        </symbol>
+        <symbol id="px4a" viewBox="0 0 120 220">
+          <rect x="20" y="16" width="80" height="188" rx="18" className="p-body-11"/>
+          <rect x="20" y="16" width="80" height="188" rx="18" fill="url(#pxSheen)"/>
+          <rect x="20" y="16" width="80" height="188" rx="18" className="p-edge"/>
+          <rect x="28" y="30" width="22" height="22" rx="5" className="p-bar"/>
+          <circle cx="35" cy="37" r="3.5" className="p-lens"/><circle cx="35" cy="37" r="1.3" className="p-iris"/>
+          <circle cx="35" cy="46" r="1.6" className="p-flash"/>
+          <circle cx="44" cy="46" r="1.2" className="p-flash"/>
+          <circle cx="60" cy="110" r="9" stroke="rgba(255,255,255,.4)" strokeWidth="1.5" fill="none"/>
+        </symbol>
+        <symbol id="px4xl" viewBox="0 0 120 220">
+          <rect x="18" y="14" width="84" height="192" rx="18" className="p-body-5"/>
+          <rect x="18" y="14" width="84" height="192" rx="18" fill="url(#pxSheen)"/>
+          <rect x="18" y="14" width="84" height="192" rx="18" className="p-edge"/>
+          <rect x="26" y="28" width="34" height="34" rx="7" className="p-bar"/>
+          <circle cx="36" cy="38" r="5" className="p-lens"/><circle cx="36" cy="38" r="1.8" className="p-iris"/>
+          <circle cx="50" cy="38" r="4" className="p-lens"/><circle cx="50" cy="38" r="1.5" className="p-iris"/>
+          <circle cx="36" cy="54" r="2" className="p-flash"/>
+          <circle cx="50" cy="54" r="1.6" className="p-flash"/>
+        </symbol>
+        <symbol id="px4" viewBox="0 0 120 220">
+          <rect x="20" y="16" width="80" height="188" rx="18" className="p-body-3"/>
+          <rect x="20" y="16" width="80" height="188" rx="18" fill="url(#pxSheen)"/>
+          <rect x="20" y="16" width="80" height="188" rx="18" className="p-edge"/>
+          <rect x="28" y="30" width="32" height="32" rx="7" className="p-bar"/>
+          <circle cx="37" cy="40" r="4.5" className="p-lens"/><circle cx="37" cy="40" r="1.7" className="p-iris"/>
+          <circle cx="50" cy="40" r="3.6" className="p-lens"/><circle cx="50" cy="40" r="1.4" className="p-iris"/>
+          <circle cx="37" cy="54" r="1.8" className="p-flash"/>
+          <circle cx="50" cy="54" r="1.5" className="p-flash"/>
+        </symbol>
+        <symbol id="px3a" viewBox="0 0 120 220">
+          <rect x="20" y="16" width="80" height="188" rx="18" className="p-body-5"/>
+          <rect x="20" y="16" width="80" height="60" rx="18" fill="#e9e3d2"/>
+          <rect x="20" y="60" width="80" height="144" fill="#f3eee0"/>
+          <rect x="20" y="16" width="80" height="188" rx="18" fill="url(#pxSheen)"/>
+          <rect x="20" y="16" width="80" height="188" rx="18" className="p-edge"/>
+          <circle cx="36" cy="40" r="6" className="p-lens"/><circle cx="36" cy="40" r="2.4" className="p-iris"/>
+          <rect x="48" y="36" width="6" height="8" rx="1.5" className="p-flash"/>
+          <circle cx="60" cy="110" r="10" className="p-fp"/>
+        </symbol>
+        <symbol id="px3" viewBox="0 0 120 220">
+          <rect x="20" y="16" width="80" height="188" rx="18" className="p-body-5"/>
+          <rect x="20" y="16" width="80" height="60" rx="18" fill="#ffffff"/>
+          <rect x="20" y="60" width="80" height="144" fill="#f3eee0"/>
+          <rect x="20" y="16" width="80" height="188" rx="18" fill="url(#pxSheen)"/>
+          <rect x="20" y="16" width="80" height="188" rx="18" className="p-edge"/>
+          <circle cx="36" cy="40" r="6" className="p-lens"/><circle cx="36" cy="40" r="2.4" className="p-iris"/>
+          <rect x="48" y="36" width="6" height="8" rx="1.5" className="p-flash"/>
+          <circle cx="60" cy="110" r="10" className="p-fp"/>
+        </symbol>
+        <symbol id="px2xl" viewBox="0 0 120 220">
+          <rect x="20" y="16" width="80" height="188" rx="14" className="p-body-11"/>
+          <rect x="20" y="16" width="80" height="80" rx="14" fill="#2a3340"/>
+          <rect x="20" y="80" width="80" height="124" fill="#3a4350"/>
+          <rect x="20" y="16" width="80" height="188" rx="14" fill="url(#pxSheen)"/>
+          <rect x="20" y="16" width="80" height="188" rx="14" className="p-edge"/>
+          <circle cx="36" cy="40" r="5.5" className="p-lens"/><circle cx="36" cy="40" r="2.2" className="p-iris"/>
+          <rect x="46" y="37" width="5" height="6" rx="1" className="p-flash"/>
+          <circle cx="60" cy="110" r="10" fill="rgba(255,255,255,.12)"/>
+        </symbol>
+        <symbol id="px2" viewBox="0 0 120 220">
+          <rect x="20" y="16" width="80" height="188" rx="14" className="p-body-5"/>
+          <rect x="20" y="16" width="80" height="78" rx="14" fill="#f1ebdc"/>
+          <rect x="20" y="78" width="80" height="126" fill="#ffffff"/>
+          <rect x="20" y="16" width="80" height="188" rx="14" fill="url(#pxSheen)"/>
+          <rect x="20" y="16" width="80" height="188" rx="14" className="p-edge"/>
+          <circle cx="36" cy="40" r="5.5" className="p-lens"/><circle cx="36" cy="40" r="2.2" className="p-iris"/>
+          <rect x="46" y="37" width="5" height="6" rx="1" className="p-flash"/>
+          <circle cx="60" cy="110" r="10" className="p-fp"/>
+        </symbol>
+      </defs>
+    </svg>
+  );
+}
+
+function PixelPhoneSVG({ svgId }) {
+  return (
+    <svg viewBox="0 0 120 220" style={{ height: 88, width: 'auto', display: 'block' }}>
+      <use href={`#${svgId}`} />
     </svg>
   );
 }
@@ -215,14 +466,28 @@ const IPAD_REPAIRS = {
 };
 
 const PIXEL_MODELS = [
-  { name: 'Pixel 9 Pro XL', gen: 9 }, { name: 'Pixel 9 Pro', gen: 9 }, { name: 'Pixel 9', gen: 9 },
-  { name: 'Pixel 8 Pro', gen: 8 }, { name: 'Pixel 8a', gen: 8 }, { name: 'Pixel 8', gen: 8 },
-  { name: 'Pixel 7 Pro', gen: 7 }, { name: 'Pixel 7a', gen: 7 }, { name: 'Pixel 7', gen: 7 },
-  { name: 'Pixel 6 Pro', gen: 6 }, { name: 'Pixel 6a', gen: 6 }, { name: 'Pixel 6', gen: 6 },
-  { name: 'Pixel 5a', gen: 5 }, { name: 'Pixel 5', gen: 5 },
-  { name: 'Pixel 4a 5G', gen: 4 }, { name: 'Pixel 4a', gen: 4 }, { name: 'Pixel 4 XL', gen: 4 }, { name: 'Pixel 4', gen: 4 },
-  { name: 'Pixel 3a', gen: 3 }, { name: 'Pixel 3', gen: 3 },
-  { name: 'Pixel 2 XL', gen: 2 }, { name: 'Pixel 2', gen: 2 },
+  { name: 'Pixel 9 Pro XL', gen: 9, svgId: 'px9proxl' },
+  { name: 'Pixel 9 Pro',    gen: 9, svgId: 'px9pro'   },
+  { name: 'Pixel 9',        gen: 9, svgId: 'px9'      },
+  { name: 'Pixel 8 Pro',    gen: 8, svgId: 'px8pro'   },
+  { name: 'Pixel 8a',       gen: 8, svgId: 'px8a'     },
+  { name: 'Pixel 8',        gen: 8, svgId: 'px8'      },
+  { name: 'Pixel 7 Pro',    gen: 7, svgId: 'px7pro'   },
+  { name: 'Pixel 7a',       gen: 7, svgId: 'px7a'     },
+  { name: 'Pixel 7',        gen: 7, svgId: 'px7'      },
+  { name: 'Pixel 6 Pro',    gen: 6, svgId: 'px6pro'   },
+  { name: 'Pixel 6a',       gen: 6, svgId: 'px6a'     },
+  { name: 'Pixel 6',        gen: 6, svgId: 'px6'      },
+  { name: 'Pixel 5a',       gen: 5, svgId: 'px5a'     },
+  { name: 'Pixel 5',        gen: 5, svgId: 'px5'      },
+  { name: 'Pixel 4a 5G',    gen: 4, svgId: 'px4a5g'   },
+  { name: 'Pixel 4a',       gen: 4, svgId: 'px4a'     },
+  { name: 'Pixel 4 XL',     gen: 4, svgId: 'px4xl'    },
+  { name: 'Pixel 4',        gen: 4, svgId: 'px4'      },
+  { name: 'Pixel 3a',       gen: 3, svgId: 'px3a'     },
+  { name: 'Pixel 3',        gen: 3, svgId: 'px3'      },
+  { name: 'Pixel 2 XL',     gen: 2, svgId: 'px2xl'    },
+  { name: 'Pixel 2',        gen: 2, svgId: 'px2'      },
 ];
 
 // ── Main App ──────────────────────────────────────────────────────────────────
@@ -333,6 +598,7 @@ export default function App() {
 
   return (
     <div className="app">
+      <PixelDefs />
       <div className="app-header">
         <div className="logo-mark">RR</div>
         <div>
@@ -481,7 +747,7 @@ export default function App() {
           {PIXEL_MODELS.map(m => (
             <button key={m.name} className="model-card"
               onClick={() => { set({ pixelMod: m.name, model: m.name, repairIdx: null }); go(4); }}>
-              <PixelSVG gen={m.gen} selected={false} />
+              <PixelPhoneSVG svgId={m.svgId} />
               <div className="model-name">{m.name}</div>
             </button>
           ))}
