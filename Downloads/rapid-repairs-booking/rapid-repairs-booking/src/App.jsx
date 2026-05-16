@@ -60,7 +60,6 @@ function IPhoneSVG({ size = 'std', top = 'island', svgHeight = 90 }) {
 function PhoneStage({ size, top, svgHeight = 90 }) {
   return (
     <div className="phone-stage" style={{ height: svgHeight + 20 }}>
-      <div className="phone-diamond" />
       <IPhoneSVG size={size} top={top} svgHeight={svgHeight} />
     </div>
   );

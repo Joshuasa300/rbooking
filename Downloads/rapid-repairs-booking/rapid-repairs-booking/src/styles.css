@@ -308,16 +308,7 @@ textarea { resize: vertical; min-height: 80px; }
   justify-content: center;
   width: 100%;
 }
-.phone-diamond {
-  position: absolute;
-  width: 68%;
-  aspect-ratio: 1;
-  background: #dfe6f3;
-  border-radius: 8px;
-  transform: rotate(45deg);
-  z-index: 0;
-}
-.phone-stage > svg { position: relative; z-index: 1; }
+.phone-stage > svg { position: relative; }
 .iphone-name { color: #ec3a8a !important; font-weight: 700 !important; }
 
 /* ── Responsive ───────────────────────────────────────────────────────────── */
