@@ -13,31 +13,56 @@ import './styles.css';
 
 const stripePromise = loadStripe('pk_test_REPLACE_WITH_YOUR_STRIPE_PUBLISHABLE_KEY');
 
-// ── SVG silhouettes ───────────────────────────────────────────────────────────
-function PhoneSVG({ type, selected }) {
-  const stroke = selected ? 'var(--color-text-primary)' : 'var(--color-border-secondary)';
-  const fill   = selected ? 'var(--color-background-secondary)' : 'var(--color-background-primary)';
-  const w = type === 'mini' ? 32 : type === 'promax' ? 42 : type === 'plus' ? 40 : 36;
-  const h = type === 'mini' ? 60 : type === 'promax' ? 78 : type === 'plus' ? 76 : 70;
-  const r = type === 'mini' ? 6 : 8;
-  const isPro = type === 'pro' || type === 'promax';
-  const cw = isPro ? 18 : 10, ch = isPro ? 18 : 10;
+// ── iPhone SVG silhouette (model-accurate: island / notch / home-button) ─────
+function IPhoneSVG({ size = 'std', top = 'island', svgHeight = 90 }) {
+  const uid = React.useId().replace(/:/g, '');
+  const SIZE_W = { mini: 110, std: 130, plus: 148, max: 158 };
+  const SIZE_H = { mini: 230, std: 250, plus: 268, max: 282 };
+  const W = SIZE_W[size], H = SIZE_H[size];
+  const vbW = W + 24, vbH = H + 24;
+  const svgW = Math.round((svgHeight / vbH) * vbW);
+  const r = top === 'home' ? 22 : 28;
+  const innerPad = 8, screenR = Math.max(2, r - 5), stroke = 2, color = '#1a1a1f';
+  const cx = W / 2;
+  const islandW = size === 'mini' ? 38 : 48, islandH = 12, islandY = 14;
+  const wideNotchW = size === 'mini' ? 62 : 74, wideNotchH = 16;
+  const pillNotchW = size === 'mini' ? 42 : 52, pillNotchH = 13;
+  const sgId = `sg${uid}`, bgId = `bg${uid}`;
   return (
-    <svg width={w} height={h} viewBox={`0 0 ${w} ${h}`} fill="none">
-      <rect x="1" y="1" width={w-2} height={h-2} rx={r} fill={fill} stroke={stroke} strokeWidth="1.5"/>
-      <rect x={(w-12)/2} y="4" width="12" height="4" rx="2" fill={stroke} opacity="0.4"/>
-      {isPro ? (<>
-        <rect x={(w-cw)/2} y="10" width={cw} height={ch} rx="4" fill="none" stroke={stroke} strokeWidth="1"/>
-        <circle cx={w/2-3} cy={10+ch/2} r="2.8" fill={stroke} opacity="0.3"/>
-        <circle cx={w/2+3} cy={10+ch/2} r="2.8" fill={stroke} opacity="0.3"/>
-        <circle cx={w/2} cy={10+ch/2+5} r="2.8" fill={stroke} opacity="0.3"/>
+    <svg viewBox={`-12 -12 ${vbW} ${vbH}`} width={svgW} height={svgHeight}>
+      <defs>
+        <linearGradient id={sgId} x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stopColor="#eef1f7" /><stop offset="100%" stopColor="#cfd6e6" />
+        </linearGradient>
+        <linearGradient id={bgId} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#3a3a44" /><stop offset="100%" stopColor="#1a1a1f" />
+        </linearGradient>
+      </defs>
+      <rect x={0} y={0} width={W} height={H} rx={r} ry={r} fill={`url(#${bgId})`} stroke={color} strokeWidth={stroke} strokeLinejoin="round" />
+      <line x1={-1.5} y1={H*.22} x2={-1.5} y2={H*.28} stroke={color} strokeWidth={stroke} strokeLinecap="round" />
+      <line x1={-1.5} y1={H*.32} x2={-1.5} y2={H*.42} stroke={color} strokeWidth={stroke} strokeLinecap="round" />
+      <line x1={-1.5} y1={H*.44} x2={-1.5} y2={H*.54} stroke={color} strokeWidth={stroke} strokeLinecap="round" />
+      <line x1={W+1.5} y1={H*.26} x2={W+1.5} y2={H*.4}  stroke={color} strokeWidth={stroke} strokeLinecap="round" />
+      {top === 'home' ? (<>
+        <rect x={innerPad} y={innerPad+18} width={W-innerPad*2} height={H-(innerPad+18)*2-6} rx={6} ry={6} fill={`url(#${sgId})`} strokeWidth={1.4} />
+        <rect x={cx-22} y={innerPad+6} width={44} height={4} rx={2} fill={color} opacity={0.7} />
+        <circle cx={cx} cy={H-innerPad-12} r={9} fill="none" stroke={color} strokeWidth={1.6} />
       </>) : (<>
-        <rect x={(w-10)/2} y="10" width="10" height="10" rx="3" fill="none" stroke={stroke} strokeWidth="1"/>
-        <circle cx={w/2-2} cy="15" r="2.5" fill={stroke} opacity="0.3"/>
-        <circle cx={w/2+2} cy="15" r="2.5" fill={stroke} opacity="0.3"/>
+        <rect x={innerPad} y={innerPad} width={W-innerPad*2} height={H-innerPad*2} rx={screenR} ry={screenR} fill={`url(#${sgId})`} strokeWidth={1.4} />
+        {top === 'island' && <rect x={cx-islandW/2} y={islandY} width={islandW} height={islandH} rx={islandH/2} ry={islandH/2} fill={color} />}
+        {top === 'notch-wide' && (() => { const w=wideNotchW,h=wideNotchH,br=7,x0=cx-w/2,y0=innerPad; return <path d={`M ${x0} ${y0} H ${x0+w} V ${y0+h-br} A ${br} ${br} 0 0 1 ${x0+w-br} ${y0+h} H ${x0+br} A ${br} ${br} 0 0 1 ${x0} ${y0+h-br} Z`} fill={color} />; })()}
+        {top === 'notch'      && (() => { const w=pillNotchW,h=pillNotchH,br=h/2,x0=cx-w/2,y0=innerPad;  return <path d={`M ${x0} ${y0} H ${x0+w} V ${y0+h-br} A ${br} ${br} 0 0 1 ${x0+w-br} ${y0+h} H ${x0+br} A ${br} ${br} 0 0 1 ${x0} ${y0+h-br} Z`} fill={color} />; })()}
       </>)}
-      <line x1={w/2-6} y1={h-6} x2={w/2+6} y2={h-6} stroke={stroke} strokeWidth="1.5" strokeLinecap="round" opacity="0.35"/>
     </svg>
+  );
+}
+
+function PhoneStage({ size, top, svgHeight = 90 }) {
+  return (
+    <div className="phone-stage" style={{ height: svgHeight + 20 }}>
+      <div className="phone-diamond" />
+      <IPhoneSVG size={size} top={top} svgHeight={svgHeight} />
+    </div>
   );
 }
 
@@ -417,8 +442,8 @@ export default function App() {
           {iphoneSeries.map(s => (
             <button key={s.id} className="series-card"
               onClick={() => { set({ series: s.id, model: null, repairIdx: null }); go(3); }}>
-              <PhoneSVG type={s.svgType} selected={false} />
-              <div className="series-name">{s.name}</div>
+              <PhoneStage {...s.svgProps} svgHeight={85} />
+              <div className="series-name iphone-name">{s.name}</div>
               <div className="series-sub">{s.sub}</div>
             </button>
           ))}
@@ -524,8 +549,8 @@ export default function App() {
               onClick={() => { set({ model: m.name, repairIdx: null }); go(4); }}>
               {isSamsung
                 ? <SamsungSVG type={m.svgType || 'std'} selected={false} />
-                : <PhoneSVG type={st.series} selected={false} />}
-              <div className="model-name">{m.name}</div>
+                : <PhoneStage {...m.svgProps} svgHeight={72} />}
+              <div className={`model-name${!isSamsung ? ' iphone-name' : ''}`}>{m.name}</div>
             </button>
           ))}
         </div>
