@@ -360,18 +360,111 @@ function PixelPhoneSVG({ svgId }) {
   );
 }
 
-function IPadSVG({ size, selected }) {
+function IPadSVG({ variant, selected }) {
   const stroke = selected ? 'var(--color-text-primary)' : 'var(--color-border-secondary)';
   const fill   = selected ? 'var(--color-background-secondary)' : 'var(--color-background-primary)';
-  const dims = { sm: [42,56], md: [50,66], lg: [58,76] };
-  const [w, h] = dims[size] || dims.md;
+  if (variant === 'ipad10') return (
+    <svg width="46" height="60" viewBox="0 0 46 60" fill="none">
+      <rect x="1" y="1" width="44" height="58" rx="8" fill={fill} stroke={stroke} strokeWidth="1.3"/>
+      <rect x="5.5" y="6.5" width="35" height="45" rx="2" stroke={stroke} strokeWidth="0.6" opacity="0.35"/>
+      <rect x="17.5" y="3" width="11" height="2.5" rx="1.25" fill={stroke} opacity="0.45"/>
+      <rect x="18" y="55.5" width="10" height="2" rx="1" fill={stroke} opacity="0.25"/>
+    </svg>
+  );
+  if (variant === 'ipad_home_lg') return (
+    <svg width="46" height="60" viewBox="0 0 46 60" fill="none">
+      <rect x="1" y="1" width="44" height="58" rx="6" fill={fill} stroke={stroke} strokeWidth="1.3"/>
+      <rect x="5.5" y="9" width="35" height="35" rx="2" stroke={stroke} strokeWidth="0.6" opacity="0.35"/>
+      <circle cx="23" cy="53" r="3.8" fill="none" stroke={stroke} strokeWidth="1.1" opacity="0.6"/>
+      <circle cx="23" cy="5" r="1.3" fill={stroke} opacity="0.45"/>
+    </svg>
+  );
+  if (variant === 'ipad_home_sm') return (
+    <svg width="44" height="58" viewBox="0 0 44 58" fill="none">
+      <rect x="1" y="1" width="42" height="56" rx="5" fill={fill} stroke={stroke} strokeWidth="1.3"/>
+      <rect x="5" y="8.5" width="34" height="33" rx="2" stroke={stroke} strokeWidth="0.6" opacity="0.35"/>
+      <circle cx="22" cy="51.5" r="3.6" fill="none" stroke={stroke} strokeWidth="1.1" opacity="0.6"/>
+      <circle cx="22" cy="4.5" r="1.2" fill={stroke} opacity="0.45"/>
+    </svg>
+  );
+  if (variant === 'ipad_30pin') return (
+    <svg width="42" height="56" viewBox="0 0 42 56" fill="none">
+      <rect x="1" y="1" width="40" height="54" rx="5" fill={fill} stroke={stroke} strokeWidth="1.3"/>
+      <rect x="5" y="8" width="32" height="31" rx="2" stroke={stroke} strokeWidth="0.6" opacity="0.35"/>
+      <circle cx="21" cy="49.5" r="3.5" fill="none" stroke={stroke} strokeWidth="1.1" opacity="0.6"/>
+      <circle cx="21" cy="4.5" r="1.2" fill={stroke} opacity="0.45"/>
+      <rect x="10.5" y="53.5" width="21" height="1.8" rx="0.9" fill={stroke} opacity="0.25"/>
+    </svg>
+  );
+  if (variant === 'air_modern') return (
+    <svg width="46" height="60" viewBox="0 0 46 60" fill="none">
+      <rect x="1" y="1" width="44" height="58" rx="9" fill={fill} stroke={stroke} strokeWidth="1.3"/>
+      <rect x="5.5" y="6.5" width="35" height="45" rx="2" stroke={stroke} strokeWidth="0.6" opacity="0.35"/>
+      <rect x="18" y="3" width="10" height="2.5" rx="1.25" fill={stroke} opacity="0.45"/>
+      <rect x="42" y="16" width="3.5" height="8" rx="1.75" fill={stroke} opacity="0.45"/>
+      <rect x="18" y="55.5" width="10" height="2" rx="1" fill={stroke} opacity="0.25"/>
+    </svg>
+  );
+  if (variant === 'air_home_lg') return (
+    <svg width="46" height="60" viewBox="0 0 46 60" fill="none">
+      <rect x="1" y="1" width="44" height="58" rx="7" fill={fill} stroke={stroke} strokeWidth="1.3"/>
+      <rect x="5.5" y="8.5" width="35" height="37" rx="2" stroke={stroke} strokeWidth="0.6" opacity="0.35"/>
+      <circle cx="23" cy="53" r="3.8" fill="none" stroke={stroke} strokeWidth="1.1" opacity="0.6"/>
+      <circle cx="23" cy="5" r="1.3" fill={stroke} opacity="0.45"/>
+    </svg>
+  );
+  if (variant === 'air_home_sm') return (
+    <svg width="44" height="58" viewBox="0 0 44 58" fill="none">
+      <rect x="1" y="1" width="42" height="56" rx="6" fill={fill} stroke={stroke} strokeWidth="1.3"/>
+      <rect x="5" y="8" width="34" height="35" rx="2" stroke={stroke} strokeWidth="0.6" opacity="0.35"/>
+      <circle cx="22" cy="51.5" r="3.6" fill="none" stroke={stroke} strokeWidth="1.1" opacity="0.6"/>
+      <circle cx="22" cy="4.5" r="1.2" fill={stroke} opacity="0.45"/>
+    </svg>
+  );
+  if (variant === 'pro_modern_lg') return (
+    <svg width="52" height="66" viewBox="0 0 52 66" fill="none">
+      <rect x="1" y="1" width="50" height="64" rx="5" fill={fill} stroke={stroke} strokeWidth="1.3"/>
+      <rect x="4.5" y="5" width="43" height="56" rx="1.5" stroke={stroke} strokeWidth="0.6" opacity="0.35"/>
+      <rect x="21" y="2.5" width="10" height="2" rx="1" fill={stroke} opacity="0.45"/>
+      <rect x="21.5" y="63" width="9" height="2" rx="1" fill={stroke} opacity="0.25"/>
+      <circle cx="1.5" cy="30" r="1" fill={stroke} opacity="0.3"/>
+      <circle cx="1.5" cy="33" r="1" fill={stroke} opacity="0.3"/>
+      <circle cx="1.5" cy="36" r="1" fill={stroke} opacity="0.3"/>
+    </svg>
+  );
+  if (variant === 'pro_modern_sm') return (
+    <svg width="46" height="62" viewBox="0 0 46 62" fill="none">
+      <rect x="1" y="1" width="44" height="60" rx="5" fill={fill} stroke={stroke} strokeWidth="1.3"/>
+      <rect x="4" y="5" width="38" height="52" rx="1.5" stroke={stroke} strokeWidth="0.6" opacity="0.35"/>
+      <rect x="18" y="2.5" width="10" height="2" rx="1" fill={stroke} opacity="0.45"/>
+      <rect x="18.5" y="59" width="9" height="2" rx="1" fill={stroke} opacity="0.25"/>
+      <circle cx="1.5" cy="27" r="1" fill={stroke} opacity="0.3"/>
+      <circle cx="1.5" cy="30" r="1" fill={stroke} opacity="0.3"/>
+      <circle cx="1.5" cy="33" r="1" fill={stroke} opacity="0.3"/>
+    </svg>
+  );
+  if (variant === 'pro_legacy_lg') return (
+    <svg width="52" height="66" viewBox="0 0 52 66" fill="none">
+      <rect x="1" y="1" width="50" height="64" rx="6" fill={fill} stroke={stroke} strokeWidth="1.3"/>
+      <rect x="6" y="10" width="40" height="40" rx="2" stroke={stroke} strokeWidth="0.6" opacity="0.35"/>
+      <circle cx="26" cy="59" r="4" fill="none" stroke={stroke} strokeWidth="1.1" opacity="0.6"/>
+      <circle cx="26" cy="5.5" r="1.5" fill={stroke} opacity="0.45"/>
+    </svg>
+  );
+  if (variant === 'pro_legacy_sm') return (
+    <svg width="46" height="62" viewBox="0 0 46 62" fill="none">
+      <rect x="1" y="1" width="44" height="60" rx="6" fill={fill} stroke={stroke} strokeWidth="1.3"/>
+      <rect x="5.5" y="9.5" width="35" height="37" rx="2" stroke={stroke} strokeWidth="0.6" opacity="0.35"/>
+      <circle cx="23" cy="55" r="3.8" fill="none" stroke={stroke} strokeWidth="1.1" opacity="0.6"/>
+      <circle cx="23" cy="5.5" r="1.3" fill={stroke} opacity="0.45"/>
+    </svg>
+  );
+  // fallback
   return (
-    <svg width={w} height={h} viewBox={`0 0 ${w} ${h}`} fill="none">
-      <rect x="1" y="1" width={w-2} height={h-2} rx="6" fill={fill} stroke={stroke} strokeWidth="1.5"/>
-      <rect x={(w-18)/2} y="4" width="18" height="3" rx="1.5" fill={stroke} opacity="0.35"/>
-      <circle cx={w/2} cy={h-8} r="4.5" fill="none" stroke={stroke} strokeWidth="1.2" opacity="0.5"/>
-      <rect x="5" y="11" width={w-10} height={h-24} rx="2" fill="none" stroke={stroke} strokeWidth="0.75" opacity="0.2"/>
-      <circle cx={w-5} cy={h/2} r="2" fill={stroke} opacity="0.2"/>
+    <svg width="46" height="60" viewBox="0 0 46 60" fill="none">
+      <rect x="1" y="1" width="44" height="58" rx="6" fill={fill} stroke={stroke} strokeWidth="1.3"/>
+      <rect x="5.5" y="9" width="35" height="35" rx="2" stroke={stroke} strokeWidth="0.6" opacity="0.35"/>
+      <circle cx="23" cy="53" r="3.8" fill="none" stroke={stroke} strokeWidth="1.1" opacity="0.6"/>
     </svg>
   );
 }
@@ -415,28 +508,39 @@ const LT_CARDS = [
 
 // iPad series / models
 const IPAD_SERIES = [
-  { id: 'ipad', name: 'iPad',      sub: 'Standard range', size: 'sm' },
-  { id: 'air',  name: 'iPad Air',  sub: 'Air lineup',     size: 'md' },
-  { id: 'pro',  name: 'iPad Pro',  sub: 'Pro lineup',     size: 'lg' },
+  { id: 'ipad', name: 'iPad',      sub: 'Standard range', svgType: 'ipad_home_lg'  },
+  { id: 'air',  name: 'iPad Air',  sub: 'Air lineup',     svgType: 'air_modern'    },
+  { id: 'pro',  name: 'iPad Pro',  sub: 'Pro lineup',     svgType: 'pro_modern_sm' },
 ];
 const IPAD_MODELS = {
   ipad: [
-    { name: 'iPad 10th gen', year: '2022' }, { name: 'iPad 9th gen', year: '2021' },
-    { name: 'iPad 8th gen',  year: '2020' }, { name: 'iPad 7th gen', year: '2019' },
-    { name: 'iPad 6th gen',  year: '2018' }, { name: 'iPad 5th gen', year: '2017' },
-    { name: 'iPad 4th gen',  year: '2012' }, { name: 'iPad 3rd gen', year: '2012' },
+    { name: 'iPad 10th gen', year: '2022', svgType: 'ipad10'       },
+    { name: 'iPad 9th gen',  year: '2021', svgType: 'ipad_home_lg' },
+    { name: 'iPad 8th gen',  year: '2020', svgType: 'ipad_home_lg' },
+    { name: 'iPad 7th gen',  year: '2019', svgType: 'ipad_home_lg' },
+    { name: 'iPad 6th gen',  year: '2018', svgType: 'ipad_home_sm' },
+    { name: 'iPad 5th gen',  year: '2017', svgType: 'ipad_home_sm' },
+    { name: 'iPad 4th gen',  year: '2012', svgType: 'ipad_30pin'   },
+    { name: 'iPad 3rd gen',  year: '2012', svgType: 'ipad_30pin'   },
   ],
   air: [
-    { name: 'iPad Air 5th gen', year: '2022' }, { name: 'iPad Air 4th gen', year: '2020' },
-    { name: 'iPad Air 3rd gen', year: '2019' }, { name: 'iPad Air 2nd gen', year: '2014' },
-    { name: 'iPad Air 1st gen', year: '2013' },
+    { name: 'iPad Air 5th gen', year: '2022', svgType: 'air_modern'  },
+    { name: 'iPad Air 4th gen', year: '2020', svgType: 'air_modern'  },
+    { name: 'iPad Air 3rd gen', year: '2019', svgType: 'air_home_lg' },
+    { name: 'iPad Air 2nd gen', year: '2014', svgType: 'air_home_sm' },
+    { name: 'iPad Air 1st gen', year: '2013', svgType: 'air_home_sm' },
   ],
   pro: [
-    { name: 'iPad Pro 12.9" 5th gen', year: '2021' }, { name: 'iPad Pro 11" 5th gen', year: '2021' },
-    { name: 'iPad Pro 12.9" 4th gen', year: '2020' }, { name: 'iPad Pro 11" 4th gen', year: '2020' },
-    { name: 'iPad Pro 12.9" 3rd gen', year: '2018' }, { name: 'iPad Pro 11" 3rd gen', year: '2018' },
-    { name: 'iPad Pro 12.9" 2nd gen', year: '2017' }, { name: 'iPad Pro 10.5" 2nd gen', year: '2017' },
-    { name: 'iPad Pro 12.9" 1st gen', year: '2015' }, { name: 'iPad Pro 9.7" 1st gen', year: '2016' },
+    { name: 'iPad Pro 12.9" 5th gen', year: '2021', svgType: 'pro_modern_lg' },
+    { name: 'iPad Pro 11" 5th gen',   year: '2021', svgType: 'pro_modern_sm' },
+    { name: 'iPad Pro 12.9" 4th gen', year: '2020', svgType: 'pro_modern_lg' },
+    { name: 'iPad Pro 11" 4th gen',   year: '2020', svgType: 'pro_modern_sm' },
+    { name: 'iPad Pro 12.9" 3rd gen', year: '2018', svgType: 'pro_modern_lg' },
+    { name: 'iPad Pro 11" 3rd gen',   year: '2018', svgType: 'pro_modern_sm' },
+    { name: 'iPad Pro 12.9" 2nd gen', year: '2017', svgType: 'pro_legacy_lg' },
+    { name: 'iPad Pro 10.5" 2nd gen', year: '2017', svgType: 'pro_legacy_sm' },
+    { name: 'iPad Pro 12.9" 1st gen', year: '2015', svgType: 'pro_legacy_lg' },
+    { name: 'iPad Pro 9.7" 1st gen',  year: '2016', svgType: 'pro_legacy_sm' },
   ],
 };
 const IPAD_REPAIRS = {
@@ -772,7 +876,7 @@ export default function App() {
           {IPAD_SERIES.map(s => (
             <button key={s.id} className="series-card"
               onClick={() => { set({ ipadSer: s.id, ipadMod: null, repairIdx: null }); go(3); }}>
-              <IPadSVG size={s.size} selected={false} />
+              <IPadSVG variant={s.svgType} selected={false} />
               <div className="series-name">{s.name}</div>
               <div className="series-sub">{s.sub}</div>
             </button>
@@ -794,7 +898,7 @@ export default function App() {
           {models.map(m => (
             <button key={m.name} className="model-card"
               onClick={() => { set({ ipadMod: m.name, model: m.name, repairIdx: null }); go(4); }}>
-              <IPadSVG size={ser?.size || 'md'} selected={false} />
+              <IPadSVG variant={m.svgType || 'ipad_home_lg'} selected={false} />
               <div className="model-name">{m.name}</div>
               <div className="model-year">{m.year}</div>
             </button>
