@@ -111,9 +111,9 @@ export const samsungModels = {
     { name: 'S21 Ultra', year: '2021', svgType: 'ultra', img: `${GSM}/pics/samsung/samsung-galaxy-s21-ultra-5g-1.jpg`,         imgFb: `${GSM}/bigpic/samsung-galaxy-s21-ultra-5g.jpg` },
     { name: 'S21 Plus',  year: '2021', svgType: 'plus',  img: `${GSM}/pics/samsung/samsung-galaxy-s21-plus-5g-1.jpg`,          imgFb: `${GSM}/bigpic/samsung-galaxy-s21-plus-5g.jpg` },
     { name: 'S21',       year: '2021', svgType: 'std',   img: `${GSM}/pics/samsung/samsung-galaxy-s21-5g-1.jpg`,               imgFb: `${GSM}/bigpic/samsung-galaxy-s21-5g.jpg` },
-    { name: 'S20 Ultra', year: '2020', svgType: 'ultra', img: `${GSM}/pics/samsung/samsung-galaxy-s20-ultra-1.jpg`,            imgFb: `${GSM}/bigpic/samsung-galaxy-s20-ultra.jpg` },
+    { name: 'S20 Ultra', year: '2020', svgType: 'ultra', img: `${GSM}/bigpic/samsung-galaxy-s20-ultra-.jpg`,                 imgFb: `${GSM}/bigpic/samsung-galaxy-s20-ultra-.jpg` },
     { name: 'S20 Plus',  year: '2020', svgType: 'plus',  img: `${GSM}/pics/samsung/samsung-galaxy-s20-plus-1.jpg`,             imgFb: `${GSM}/bigpic/samsung-galaxy-s20-plus.jpg` },
-    { name: 'S20',       year: '2020', svgType: 'std',   img: `${GSM}/pics/samsung/samsung-galaxy-s20-5g-1.jpg`,               imgFb: `${GSM}/bigpic/samsung-galaxy-s20-5g.jpg` },
+    { name: 'S20',       year: '2020', svgType: 'std',   img: `${GSM}/pics/samsung/samsung-galaxy-s20-1.jpg`,                  imgFb: `${GSM}/pics/samsung/samsung-galaxy-s20-1.jpg` },
     { name: 'S20 FE',    year: '2020', svgType: 'std',   img: `${GSM}/pics/samsung/samsung-galaxy-s20-fe-5g-1.jpg`,            imgFb: `${GSM}/bigpic/samsung-galaxy-s20-fe-5g.jpg` },
   ],
   note: [
