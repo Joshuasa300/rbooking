@@ -29,6 +29,8 @@ export const devicesByCat = {
   ],
 };
 
+const GSM = 'https://fdn2.gsmarena.com/vv';
+
 // ── iPhone & Samsung series ──────────────────────────────────────────────────
 export const iphoneSeries = [
   { id: 'std',    name: 'iPhone',                sub: 'Standard lineup',       svgType: 'std',    svgProps: { size: 'std',  top: 'island',     cameras: 'dual'   } },
@@ -91,7 +93,6 @@ export const iphoneModels = {
     { name: 'iPhone 6+',       year: '2014', svgType: 'plus', svgProps: { size: 'plus', top: 'home',   cameras: 'single' } },
   ],
 };
-const GSM = 'https://fdn2.gsmarena.com/vv';
 export const samsungModels = {
   s: [
     { name: 'S25 Ultra', year: '2025', svgType: 'ultra', img: `${GSM}/pics/samsung/samsung-galaxy-s25-ultra-sm-s938-1.jpg`,    imgFb: `${GSM}/bigpic/samsung-galaxy-s25-ultra-sm-s938.jpg` },
