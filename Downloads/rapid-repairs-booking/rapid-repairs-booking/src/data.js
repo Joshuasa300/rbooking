@@ -122,10 +122,18 @@ export const samsungModels = {
     { name: 'Note 9', year: '2018', svgType: 'plus' }, { name: 'Note 8', year: '2017', svgType: 'plus' },
   ],
   a: [
-    { name: 'A52', year: '2021', svgType: 'std' }, { name: 'A51', year: '2020', svgType: 'std' }, { name: 'A71', year: '2020', svgType: 'plus' },
-    { name: 'A41', year: '2020', svgType: 'std' }, { name: 'A50', year: '2019', svgType: 'std' }, { name: 'A70', year: '2019', svgType: 'plus' },
-    { name: 'A40', year: '2019', svgType: 'std' }, { name: 'A21s', year: '2020', svgType: 'std' }, { name: 'A32', year: '2021', svgType: 'std' },
-    { name: 'A42', year: '2020', svgType: 'std' }, { name: 'A20e', year: '2019', svgType: 'std' }, { name: 'A10', year: '2019', svgType: 'std' },
+    { name: 'A52',  year: '2021', svgType: 'std',  img: `${GSM}/bigpic/samsung-galaxy-a52-4g.jpg`,                   imgFb: `${GSM}/bigpic/samsung-galaxy-a52-4g.jpg` },
+    { name: 'A51',  year: '2020', svgType: 'std',  img: `${GSM}/pics/samsung/samsung-galaxy-a51-sm-a515-1.jpg`,      imgFb: `${GSM}/bigpic/samsung-galaxy-a51-sm-a515.jpg` },
+    { name: 'A71',  year: '2020', svgType: 'plus', img: `${GSM}/pics/samsung/samsung-galaxy-a71-1.jpg`,              imgFb: `${GSM}/bigpic/samsung-galaxy-a71.jpg` },
+    { name: 'A41',  year: '2020', svgType: 'std',  img: `${GSM}/pics/samsung/samsung-galaxy-a41-1.jpg`,              imgFb: `${GSM}/bigpic/samsung-galaxy-a41.jpg` },
+    { name: 'A50',  year: '2019', svgType: 'std',  img: `${GSM}/pics/samsung/samsung-galaxy-a50s-1.jpg`,             imgFb: `${GSM}/bigpic/samsung-galaxy-a50s.jpg` },
+    { name: 'A70',  year: '2019', svgType: 'plus', img: `${GSM}/pics/samsung/samsung-galaxy-a70-1.jpg`,              imgFb: `${GSM}/bigpic/samsung-galaxy-a70.jpg` },
+    { name: 'A40',  year: '2019', svgType: 'std',  img: `${GSM}/pics/samsung/samsung-galaxy-a40-1.jpg`,              imgFb: `${GSM}/bigpic/samsung-galaxy-a40.jpg` },
+    { name: 'A21s', year: '2020', svgType: 'std',  img: `${GSM}/pics/samsung/samsung-galaxy-a21s-1.jpg`,             imgFb: `${GSM}/bigpic/samsung-galaxy-a21s.jpg` },
+    { name: 'A32',  year: '2021', svgType: 'std',  img: `${GSM}/pics/samsung/samsung-galaxy-a32-5g-1.jpg`,           imgFb: `${GSM}/bigpic/samsung-galaxy-a32-5g.jpg` },
+    { name: 'A42',  year: '2020', svgType: 'std',  img: `${GSM}/pics/samsung/samsung-galaxy-a42-5g-1.jpg`,           imgFb: `${GSM}/bigpic/samsung-galaxy-a42-5g.jpg` },
+    { name: 'A20e', year: '2019', svgType: 'std',  img: `${GSM}/pics/samsung/samsung-galaxy-a20e-1.jpg`,             imgFb: `${GSM}/bigpic/samsung-galaxy-a20e.jpg` },
+    { name: 'A10',  year: '2019', svgType: 'std',  img: `${GSM}/pics/samsung/samsung-galaxy-a10-1.jpg`,              imgFb: `${GSM}/bigpic/samsung-galaxy-a10.jpg` },
   ],
 };
 
