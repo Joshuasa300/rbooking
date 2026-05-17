@@ -117,9 +117,12 @@ export const samsungModels = {
     { name: 'S20 FE',    year: '2020', svgType: 'std',   img: `${GSM}/pics/samsung/samsung-galaxy-s20-fe-5g-1.jpg`,            imgFb: `${GSM}/bigpic/samsung-galaxy-s20-fe-5g.jpg` },
   ],
   note: [
-    { name: 'Note 20 Ultra', year: '2020', svgType: 'ultra' }, { name: 'Note 20', year: '2020', svgType: 'plus' },
-    { name: 'Note 10 Plus', year: '2019', svgType: 'ultra' }, { name: 'Note 10', year: '2019', svgType: 'plus' },
-    { name: 'Note 9', year: '2018', svgType: 'plus' }, { name: 'Note 8', year: '2017', svgType: 'plus' },
+    { name: 'Note 20 Ultra', year: '2020', svgType: 'ultra', img: `${GSM}/pics/samsung/samsung-galaxy-note20-ultra-1.jpg` },
+    { name: 'Note 20',       year: '2020', svgType: 'plus',  img: `${GSM}/pics/samsung/samsung-galaxy-note20-1.jpg` },
+    { name: 'Note 10 Plus',  year: '2019', svgType: 'ultra' },
+    { name: 'Note 10',       year: '2019', svgType: 'plus' },
+    { name: 'Note 9',        year: '2018', svgType: 'plus',  img: `${GSM}/pics/samsung/samsung-galaxy-note9-1.jpg` },
+    { name: 'Note 8',        year: '2017', svgType: 'plus',  img: `${GSM}/bigpic/samsung-galaxy-note8.jpg` },
   ],
   a: [
     { name: 'A52',  year: '2021', svgType: 'std',  img: `${GSM}/bigpic/samsung-galaxy-a52-4g.jpg`,                   imgFb: `${GSM}/bigpic/samsung-galaxy-a52-4g.jpg` },
