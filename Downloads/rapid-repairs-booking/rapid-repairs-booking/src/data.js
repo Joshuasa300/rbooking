@@ -37,9 +37,9 @@ export const iphoneSeries = [
   { id: 'mini',   name: 'iPhone mini / Plus / e',sub: 'mini, Plus & e models', svgType: 'mini',   svgProps: { size: 'mini', top: 'notch',      cameras: 'dual'   } },
 ];
 export const samsungSeries = [
-  { id: 's',    name: 'Samsung S-series', sub: 'Flagship range', svgType: 'plus' },
-  { id: 'note', name: 'Samsung Note',     sub: 'Note series',    svgType: 'ultra' },
-  { id: 'a',    name: 'Samsung A-series', sub: 'Mid-range',      svgType: 'std' },
+  { id: 's',    name: 'Samsung S-series', sub: 'Flagship range', svgType: 'plus',  img: `${GSM}/pics/samsung/samsung-galaxy-s25-ultra-sm-s938-1.jpg` },
+  { id: 'note', name: 'Samsung Note',     sub: 'Note series',    svgType: 'ultra', img: `${GSM}/pics/samsung/samsung-galaxy-note20-ultra-1.jpg` },
+  { id: 'a',    name: 'Samsung A-series', sub: 'Mid-range',      svgType: 'std',   img: `${GSM}/bigpic/samsung-galaxy-a52-4g.jpg` },
 ];
 
 // ── Models per series ────────────────────────────────────────────────────────

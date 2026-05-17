@@ -113,6 +113,7 @@ body { background: var(--bg); font-family: var(--font); color: var(--text-primar
 }
 .series-card:hover { border-color: var(--border-strong); background: var(--bg); }
 .series-card.selected { border: 2px solid var(--accent); }
+.series-photo { width: auto; height: 100px; object-fit: contain; display: block; }
 .series-name { font-size: 14px; font-weight: 500; color: var(--text-primary); }
 .series-sub { font-size: 11px; color: var(--text-muted); }
 

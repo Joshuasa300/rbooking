@@ -837,7 +837,9 @@ export default function App() {
           {samsungSeries.map(s => (
             <button key={s.id} className="series-card"
               onClick={() => { set({ series: s.id, model: null, repairIdx: null }); go(3); }}>
-              <SamsungSVG type={s.svgType} selected={false} />
+              {s.img
+                ? <img src={s.img} alt={s.name} className="series-photo" />
+                : <SamsungSVG type={s.svgType} selected={false} />}
               <div className="series-name">{s.name}</div>
               <div className="series-sub">{s.sub}</div>
             </button>
