@@ -231,7 +231,7 @@ export const modelRepairs = {
 // ── Per-model Pixel repairs ──────────────────────────────────────────────────
 const px = (orig, oled, batt) => [
   { name: 'Screen – Original', sub: 'OEM-matched panel',          time: '45–60 min', price: orig },
-  ...(oled ? [{ name: 'Screen – OLED', sub: 'High-quality aftermarket OLED', time: '45–60 min', price: oled }] : []),
+  ...(oled ? [{ name: 'Screen – OLED', sub: 'High-quality aftermarket OLED · fingerprint sensor may not work after install', time: '45–60 min', price: oled }] : []),
   { name: 'Battery replacement',                                    time: '2–3 hrs',   price: batt },
   { name: 'Motherboard / water damage',                             time: '4–7 days',  price: null, quote: true },
 ];
