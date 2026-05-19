@@ -11,7 +11,7 @@ import {
 } from './data';
 import './styles.css';
 
-const stripePromise = loadStripe('pk_test_REPLACE_WITH_YOUR_STRIPE_PUBLISHABLE_KEY');
+const stripePromise = loadStripe('pk_live_51SRIrO3cf82TqVsnUJGnzRaneumXSuGACesctDl5wGh7xekVzdCSDh7Nq77WCzqHkyW0Y3j9xlBIwfABRDR3VN0h00HcUMduws');
 
 // ── iPhone SVG silhouette (model-accurate: island / notch / home-button) ─────
 function IPhoneSVG({ size = 'std', top = 'island', svgHeight = 90 }) {
