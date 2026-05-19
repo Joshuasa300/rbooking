@@ -338,7 +338,7 @@ export function getAvailableSlots() {
     date.setDate(now.getDate() + d + 1);
     slots.push({
       label: `${days[date.getDay()]} ${date.getDate()} ${months[date.getMonth()]}`,
-      times: times.filter(t => t === '09:00' || t === '21:00' || Math.random() > 0.35),
+      times,
     });
   }
   return slots;
