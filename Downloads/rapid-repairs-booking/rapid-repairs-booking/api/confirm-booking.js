@@ -1,32 +1,148 @@
 // api/confirm-booking.js
 // Vercel serverless function
-// Called after Stripe payment succeeds — sends WhatsApp notifications + creates Google Calendar event
+// Called after Stripe payment succeeds — sends SMS + email confirmations + Google Calendar event
 //
 // Required environment variables in Vercel dashboard:
-//   STRIPE_SECRET_KEY         — from stripe.com/dashboard
-//   STRIPE_WEBHOOK_SECRET     — from stripe webhooks (optional but recommended)
-//   TWILIO_ACCOUNT_SID        — from console.twilio.com
-//   TWILIO_AUTH_TOKEN         — from console.twilio.com
-//   TWILIO_WHATSAPP_FROM      — Twilio WhatsApp sandbox/number e.g. whatsapp:+14155238886
-//   SHOP_WHATSAPP             — whatsapp:+447730719347
-//   GOOGLE_CLIENT_EMAIL       — from Google service account JSON
-//   GOOGLE_PRIVATE_KEY        — from Google service account JSON (include \n line breaks)
-//   GOOGLE_CALENDAR_ID        — your calendar ID from Google Calendar settings (usually your gmail)
+//   TWILIO_ACCOUNT_SID   — from console.twilio.com
+//   TWILIO_AUTH_TOKEN    — from console.twilio.com
+//   TWILIO_SMS_FROM      — alphanumeric sender ID e.g. RapidRepairs (or Twilio number +447...)
+//   SHOP_PHONE           — your mobile number e.g. 07730719347
+//   RESEND_API_KEY       — from resend.com
+//   RESEND_FROM          — verified sender e.g. bookings@rapidrepairsldn.com
+//   SHOP_EMAIL           — email to receive new booking alerts e.g. joshuasa300@gmail.com
+//   GOOGLE_CLIENT_EMAIL  — from Google service account JSON
+//   GOOGLE_PRIVATE_KEY   — from Google service account JSON (include \n line breaks)
+//   GOOGLE_CALENDAR_ID   — your calendar ID from Google Calendar settings
 
 const twilio = require('twilio');
+const { Resend } = require('resend');
 const { google } = require('googleapis');
 
-// ── Twilio WhatsApp helper ─────────────────────────────────────────────────
-async function sendWhatsApp(to, body) {
-  const client = twilio(
-    process.env.TWILIO_ACCOUNT_SID,
-    process.env.TWILIO_AUTH_TOKEN
-  );
+// ── SMS helper ─────────────────────────────────────────────────────────────
+async function sendSMS(to, body) {
+  const client = twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
+  const toFormatted = `+44${to.replace(/^0/, '').replace(/\s/g, '')}`;
   return client.messages.create({
-    from: process.env.TWILIO_WHATSAPP_FROM,
-    to,
+    from: process.env.TWILIO_SMS_FROM,
+    to: toFormatted,
     body,
   });
+}
+
+// ── Email helper ────────────────────────────────────────────────────────────
+async function sendEmail({ to, subject, html }) {
+  const resend = new Resend(process.env.RESEND_API_KEY);
+  return resend.emails.send({
+    from: process.env.RESEND_FROM,
+    to,
+    subject,
+    html,
+  });
+}
+
+function customerEmailHTML(booking) {
+  const { customer, device, repair, slotDate, slotTime, ref, payMode, paidAmount, repairCost } = booking;
+  const firstName = customer.split(' ')[0];
+  const balanceDue = repairCost - paidAmount;
+  const payLine = payMode === 'deposit'
+    ? `£${paidAmount} deposit paid — please bring £${balanceDue} on the day`
+    : `£${paidAmount} paid in full — nothing more to pay`;
+
+  return `<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
+<body style="margin:0;padding:0;background:#f5f5f4;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#f5f5f4;padding:32px 16px">
+    <tr><td align="center">
+      <table width="100%" cellpadding="0" cellspacing="0" style="max-width:520px;background:#ffffff;border-radius:12px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,.08)">
+        <!-- Header -->
+        <tr>
+          <td style="background:#111;padding:24px 32px">
+            <table cellpadding="0" cellspacing="0">
+              <tr>
+                <td style="background:#fff;border-radius:8px;width:40px;height:40px;text-align:center;vertical-align:middle">
+                  <span style="font-size:18px;font-weight:700;color:#111">RR</span>
+                </td>
+                <td style="padding-left:12px">
+                  <div style="color:#fff;font-size:18px;font-weight:700;line-height:1.2">Rapid Repairs</div>
+                  <div style="color:#999;font-size:13px">Finchley · N12</div>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+        <!-- Body -->
+        <tr>
+          <td style="padding:32px">
+            <p style="margin:0 0 8px;font-size:22px;font-weight:700;color:#111">Booking confirmed ✓</p>
+            <p style="margin:0 0 24px;font-size:15px;color:#666">Hi ${firstName}, your repair is booked. See you soon!</p>
+
+            <table width="100%" cellpadding="0" cellspacing="0" style="background:#f9f9f8;border-radius:8px;padding:20px;margin-bottom:24px">
+              <tr><td style="padding:6px 0;font-size:14px;color:#888;width:130px">Device</td><td style="padding:6px 0;font-size:14px;font-weight:600;color:#111">${device}</td></tr>
+              <tr><td style="padding:6px 0;font-size:14px;color:#888">Repair</td><td style="padding:6px 0;font-size:14px;font-weight:600;color:#111">${repair}</td></tr>
+              <tr><td style="padding:6px 0;font-size:14px;color:#888">Date &amp; time</td><td style="padding:6px 0;font-size:14px;font-weight:600;color:#111">${slotDate} at ${slotTime}</td></tr>
+              <tr><td style="padding:6px 0;font-size:14px;color:#888">Reference</td><td style="padding:6px 0;font-size:14px;font-weight:600;color:#111">${ref}</td></tr>
+              <tr><td style="padding:6px 0;font-size:14px;color:#888">Payment</td><td style="padding:6px 0;font-size:14px;font-weight:600;color:#111">${payLine}</td></tr>
+            </table>
+
+            <table width="100%" cellpadding="0" cellspacing="0" style="background:#f0fdf4;border-radius:8px;padding:16px;margin-bottom:24px">
+              <tr>
+                <td style="font-size:14px;color:#166534;line-height:1.6">
+                  <strong>📍 Where to find us</strong><br>
+                  193 Summers Lane, Finchley, N12 0LA<br>
+                  <span style="color:#166534;opacity:.8">Nearest stations: Arnos Grove · Finchley Central</span>
+                </td>
+              </tr>
+            </table>
+
+            <p style="margin:0;font-size:13px;color:#999;line-height:1.6">
+              90-day warranty on all repairs · No fix, no fee<br>
+              Questions? Reply to this email or call us directly.
+            </p>
+          </td>
+        </tr>
+        <!-- Footer -->
+        <tr>
+          <td style="padding:16px 32px;border-top:1px solid #f0f0f0">
+            <p style="margin:0;font-size:12px;color:#bbb;text-align:center">
+              Rapid Repairs · 193 Summers Lane, London N12 0LA · rapidrepairsldn.com
+            </p>
+          </td>
+        </tr>
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>`;
+}
+
+function shopEmailHTML(booking) {
+  const { customer, device, repair, slotDate, slotTime, ref, payMode, paidAmount, repairCost, phone, email } = booking;
+  const balanceDue = repairCost - paidAmount;
+  const payLine = payMode === 'deposit'
+    ? `£${paidAmount} deposit — £${balanceDue} to collect`
+    : `£${paidAmount} paid in full`;
+
+  return `<!DOCTYPE html>
+<html>
+<body style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;padding:24px;background:#f5f5f4">
+  <table style="max-width:480px;background:#fff;border-radius:10px;padding:24px;box-shadow:0 1px 4px rgba(0,0,0,.08)">
+    <tr><td>
+      <p style="margin:0 0 16px;font-size:18px;font-weight:700;color:#111">🔔 New booking</p>
+      <table cellpadding="0" cellspacing="0" style="width:100%;background:#f9f9f8;border-radius:8px;padding:16px">
+        <tr><td style="padding:5px 0;font-size:14px;color:#888;width:120px">Customer</td><td style="padding:5px 0;font-size:14px;font-weight:600;color:#111">${customer}</td></tr>
+        <tr><td style="padding:5px 0;font-size:14px;color:#888">Phone</td><td style="padding:5px 0;font-size:14px;font-weight:600;color:#111">${phone}</td></tr>
+        <tr><td style="padding:5px 0;font-size:14px;color:#888">Email</td><td style="padding:5px 0;font-size:14px;font-weight:600;color:#111">${email}</td></tr>
+        <tr><td style="padding:5px 0;font-size:14px;color:#888">Device</td><td style="padding:5px 0;font-size:14px;font-weight:600;color:#111">${device}</td></tr>
+        <tr><td style="padding:5px 0;font-size:14px;color:#888">Repair</td><td style="padding:5px 0;font-size:14px;font-weight:600;color:#111">${repair}</td></tr>
+        <tr><td style="padding:5px 0;font-size:14px;color:#888">Slot</td><td style="padding:5px 0;font-size:14px;font-weight:600;color:#111">${slotDate} at ${slotTime}</td></tr>
+        <tr><td style="padding:5px 0;font-size:14px;color:#888">Payment</td><td style="padding:5px 0;font-size:14px;font-weight:600;color:#111">${payLine}</td></tr>
+        <tr><td style="padding:5px 0;font-size:14px;color:#888">Ref</td><td style="padding:5px 0;font-size:14px;font-weight:600;color:#111">${ref}</td></tr>
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>`;
 }
 
 // ── Google Calendar helper ─────────────────────────────────────────────────
@@ -38,16 +154,10 @@ async function createCalendarEvent(booking) {
   });
 
   const calendar = google.calendar({ version: 'v3', auth });
-
-  // Parse slot — format is "Mon 19 May at 14:00"
-  // We'll build a proper start/end from the slot date + time
   const { slotDate, slotTime, device, repair, customer, phone, email, payMode, paidAmount, repairCost, ref } = booking;
 
-  // Build ISO datetime — slotDate like "Mon 19 May", slotTime like "14:00"
   const year = new Date().getFullYear();
-  const startStr = `${slotDate} ${year} ${slotTime}`;
-  const startDate = new Date(startStr);
-  // Default repair duration: 2 hours
+  const startDate = new Date(`${slotDate} ${year} ${slotTime}`);
   const endDate = new Date(startDate.getTime() + 2 * 60 * 60 * 1000);
 
   const balanceDue = repairCost - paidAmount;
@@ -70,15 +180,9 @@ async function createCalendarEvent(booking) {
         ``,
         `📍 193 Summers Lane, N12 0LA`,
       ].join('\n'),
-      start: {
-        dateTime: startDate.toISOString(),
-        timeZone: 'Europe/London',
-      },
-      end: {
-        dateTime: endDate.toISOString(),
-        timeZone: 'Europe/London',
-      },
-      colorId: payMode === 'deposit' ? '5' : '2', // banana=deposit, sage=paid in full
+      start: { dateTime: startDate.toISOString(), timeZone: 'Europe/London' },
+      end:   { dateTime: endDate.toISOString(),   timeZone: 'Europe/London' },
+      colorId: payMode === 'deposit' ? '5' : '2',
       reminders: {
         useDefault: false,
         overrides: [
@@ -92,23 +196,12 @@ async function createCalendarEvent(booking) {
 
 // ── Main handler ───────────────────────────────────────────────────────────
 module.exports = async (req, res) => {
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' });
-  }
+  if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
   try {
     const {
-      ref,
-      device,
-      repair,
-      repairCost,
-      slotDate,
-      slotTime,
-      payMode,       // 'deposit' | 'full'
-      paidAmount,
-      customer,      // full name
-      phone,         // customer phone e.g. 07700900000
-      email,
+      ref, device, repair, repairCost, slotDate, slotTime,
+      payMode, paidAmount, customer, phone, email,
     } = req.body;
 
     if (!device || !repair || !phone || !customer) {
@@ -116,58 +209,58 @@ module.exports = async (req, res) => {
     }
 
     const balanceDue = repairCost - paidAmount;
-    const payLabel = payMode === 'deposit'
-      ? `💳 *Deposit paid:* £${paidAmount} — balance of £${balanceDue} to collect on arrival`
-      : `💳 *Paid in full:* £${paidAmount}`;
+    const firstName = customer.split(' ')[0];
 
-    const shopMsg = [
-      `🔔 *New booking — Rapid Repairs*`,
+    const customerSMS = [
+      `Hi ${firstName}, your repair is booked at Rapid Repairs!`,
       ``,
-      `📱 *Device:* ${device}`,
-      `🔧 *Repair:* ${repair}`,
-      `📅 *Slot:* ${slotDate} at ${slotTime}`,
-      `👤 *Customer:* ${customer}`,
-      `📞 *Phone:* ${phone}`,
-      `📧 *Email:* ${email}`,
-      `${payLabel}`,
-      `🔖 *Ref:* ${ref}`,
-    ].join('\n');
-
-    const customerMsg = [
-      `Hi ${customer.split(' ')[0]}! 👋`,
-      ``,
-      `Your repair is booked with *Rapid Repairs*.`,
-      ``,
-      `📱 *Device:* ${device}`,
-      `🔧 *Repair:* ${repair}`,
-      `📅 *Slot:* ${slotDate} at ${slotTime}`,
-      `🔖 *Ref:* ${ref}`,
-      ``,
-      `📍 *Where to find us:*`,
-      `193 Summers Lane, Finchley, N12 0LA`,
-      `(Nearest: Arnos Grove / Finchley Central)`,
+      `Device: ${device}`,
+      `Repair: ${repair}`,
+      `Slot: ${slotDate} at ${slotTime}`,
+      `Ref: ${ref}`,
       ``,
       payMode === 'deposit'
-        ? `💳 Deposit of £${paidAmount} received. Please bring £${balanceDue} on the day.`
-        : `💳 Fully paid — nothing more to pay.`,
+        ? `Deposit of £${paidAmount} received. Bring £${balanceDue} on the day.`
+        : `Fully paid - nothing more to pay.`,
       ``,
-      `See you soon! Any questions, just reply to this message. 😊`,
+      `193 Summers Lane, Finchley N12 0LA`,
     ].join('\n');
 
-    // Run all three in parallel — WhatsApp to shop, WhatsApp to customer, Calendar event
-    const customerWANumber = `whatsapp:+44${phone.replace(/^0/, '').replace(/\s/g, '')}`;
+    const shopSMS = [
+      `New booking - Rapid Repairs`,
+      `${customer} | ${phone}`,
+      `${device} - ${repair}`,
+      `${slotDate} at ${slotTime}`,
+      payMode === 'deposit' ? `£${paidAmount} deposit, £${balanceDue} to collect` : `£${paidAmount} paid in full`,
+      `Ref: ${ref}`,
+    ].join('\n');
+
+    const booking = { ref, device, repair, repairCost, slotDate, slotTime, payMode, paidAmount, customer, phone, email };
 
     await Promise.all([
-      sendWhatsApp(process.env.SHOP_WHATSAPP, shopMsg),
-      sendWhatsApp(customerWANumber, customerMsg),
-      createCalendarEvent({ ref, device, repair, repairCost, slotDate, slotTime, payMode, paidAmount, customer, phone, email }),
+      // SMS to customer
+      sendSMS(phone, customerSMS).catch(e => console.error('Customer SMS failed:', e.message)),
+      // SMS to shop
+      sendSMS(process.env.SHOP_PHONE, shopSMS).catch(e => console.error('Shop SMS failed:', e.message)),
+      // Email to customer
+      sendEmail({
+        to: email,
+        subject: `Booking confirmed — ${device} repair (${ref})`,
+        html: customerEmailHTML(booking),
+      }).catch(e => console.error('Customer email failed:', e.message)),
+      // Email to shop
+      sendEmail({
+        to: process.env.SHOP_EMAIL,
+        subject: `New booking: ${customer} — ${device} ${slotDate} at ${slotTime}`,
+        html: shopEmailHTML(booking),
+      }).catch(e => console.error('Shop email failed:', e.message)),
+      // Google Calendar
+      createCalendarEvent(booking).catch(e => console.error('Calendar failed:', e.message)),
     ]);
 
     res.status(200).json({ success: true });
   } catch (error) {
     console.error('Confirm booking error:', error);
-    // Still return 200 so the frontend doesn't show an error to customer
-    // Log the error for debugging in Vercel dashboard
     res.status(200).json({ success: false, error: error.message });
   }
 };
