@@ -120,8 +120,8 @@ export const samsungModels = {
   note: [
     { name: 'Note 20 Ultra', year: '2020', svgType: 'ultra', img: `${GSM}/pics/samsung/samsung-galaxy-note20-ultra-1.jpg` },
     { name: 'Note 20',       year: '2020', svgType: 'plus',  img: `${GSM}/pics/samsung/samsung-galaxy-note20-1.jpg` },
-    { name: 'Note 10 Plus',  year: '2019', svgType: 'ultra' },
-    { name: 'Note 10',       year: '2019', svgType: 'plus' },
+    { name: 'Note 10 Plus',  year: '2019', svgType: 'ultra', img: `${GSM}/bigpic/samsung-galaxy-note10-plus-.jpg` },
+    { name: 'Note 10',       year: '2019', svgType: 'plus',  img: `${GSM}/bigpic/samsung-galaxy-note10-.jpg` },
     { name: 'Note 9',        year: '2018', svgType: 'plus',  img: `${GSM}/pics/samsung/samsung-galaxy-note9-1.jpg` },
     { name: 'Note 8',        year: '2017', svgType: 'plus',  img: `${GSM}/bigpic/samsung-galaxy-note8.jpg` },
   ],
