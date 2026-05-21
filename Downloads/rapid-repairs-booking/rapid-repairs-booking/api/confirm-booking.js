@@ -172,10 +172,20 @@ async function createCalendarEvent(booking) {
   const calendar = google.calendar({ version: 'v3', auth });
   const { slotDate, slotTime, device, repair, repairTime, customer, phone, email, payMode, paidAmount, repairCost, ref } = booking;
 
+  const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const [, dayStr, monStr] = slotDate.split(' ');
   const year = new Date().getFullYear();
-  const startDate = new Date(`${slotDate} ${year} ${slotTime}`);
-  const durationMs = parseDurationMs(repairTime);
-  const endDate = new Date(startDate.getTime() + durationMs);
+  const month = String(MONTHS.indexOf(monStr) + 1).padStart(2, '0');
+  const day   = String(dayStr).padStart(2, '0');
+
+  const [startH, startM] = slotTime.split(':').map(Number);
+  const durationMins = parseDurationMs(repairTime) / 60000;
+  const endTotalMins = startH * 60 + startM + durationMins;
+  const endH = String(Math.floor(endTotalMins / 60) % 24).padStart(2, '0');
+  const endM = String(Math.round(endTotalMins % 60)).padStart(2, '0');
+
+  const startLocal = `${year}-${month}-${day}T${slotTime}:00`;
+  const endLocal   = `${year}-${month}-${day}T${endH}:${endM}:00`;
 
   const balanceDue = repairCost - paidAmount;
   const payLabel = payMode === 'deposit'
@@ -197,8 +207,8 @@ async function createCalendarEvent(booking) {
         ``,
         `📍 193 Summers Lane, N12 0LA`,
       ].join('\n'),
-      start: { dateTime: startDate.toISOString(), timeZone: 'Europe/London' },
-      end:   { dateTime: endDate.toISOString(),   timeZone: 'Europe/London' },
+      start: { dateTime: startLocal, timeZone: 'Europe/London' },
+      end:   { dateTime: endLocal,   timeZone: 'Europe/London' },
       colorId: payMode === 'deposit' ? '5' : '2',
       reminders: {
         useDefault: false,
