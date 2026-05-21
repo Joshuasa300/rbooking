@@ -1272,7 +1272,6 @@ export default function App() {
     const slot = SLOTS[st.dayIdx];
     return (
       <div className="step-panel success-wrap">
-        <div className="success-icon"><i className="ti ti-check" aria-hidden="true" style={{ fontSize: 22 }} /></div>
         <p className="success-title">Booking confirmed!</p>
         <div className="ref-badge">{st.bookingRef}</div>
         <div className="confirm-card">
@@ -1282,7 +1281,7 @@ export default function App() {
           <div className="confirm-row"><span className="confirm-label">Slot</span><span className="confirm-val">{slot?.label} at {st.slot}</span></div>
           <div className="confirm-row"><span className="confirm-label">{st.payMode === 'deposit' ? 'Deposit paid' : 'Paid in full'}</span><span className="confirm-val">£{st.paidAmount}</span></div>
         </div>
-        <p className="success-sub">We'll WhatsApp or call <strong>{st.details.phone || 'you'}</strong> within 20 minutes to confirm.<br /><br /><i className="ti ti-map-pin" aria-hidden="true" /> 193 Summers Lane, N12 0LA<br />Open 7 days · 24 hours</p>
+        <p className="success-sub">You'll receive a confirmation via SMS and email.<br /><br /><i className="ti ti-map-pin" aria-hidden="true" /> 193 Summers Lane, N12 0LA<br />Open 7 days · 24 hours</p>
       </div>
     );
   }
