@@ -652,7 +652,7 @@ export default function App() {
       .then(({ slots }) => { if (slots?.length) setSlots(slots); })
       .catch(() => {})
       .finally(() => setSlotsLoading(false));
-  }, [st.step]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [st.step]); // eslint-disable-line
 
   // ── Repair helpers ─────────────────────────────────────────────────────────
   function getRepairs() {
