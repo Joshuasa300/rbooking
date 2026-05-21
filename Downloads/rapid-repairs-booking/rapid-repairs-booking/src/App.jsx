@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { loadStripe } from '@stripe/stripe-js';
 import { Elements, PaymentElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import {
@@ -596,7 +596,8 @@ const PIXEL_MODELS = [
 
 // ── Main App ──────────────────────────────────────────────────────────────────
 export default function App() {
-  const [SLOTS] = useState(() => getAvailableSlots());
+  const [SLOTS, setSlots] = useState(() => getAvailableSlots());
+  const [slotsLoading, setSlotsLoading] = useState(false);
 
   const [st, setSt] = useState({
     step: 0,
@@ -631,6 +632,27 @@ export default function App() {
     setSt(s => ({ ...s, step }));
     setTimeout(() => setNavLock(false), 350);
   };
+
+  // ── Fetch available slots from Google Calendar when entering time slot step ─
+  useEffect(() => {
+    if (st.step !== 5) return;
+    const repairs = (() => {
+      const { device, model, ipadMod } = st;
+      if (device === 'ipad')    return IPAD_REPAIRS[ipadMod] || [];
+      if (device === 'macbook') return [];
+      if (!model)               return [];
+      if (device === 'iphone' || device === 'samsung') return modelRepairs[model] || [];
+      if (device === 'google')  return pixelRepairs[model] || genericRepairs.google || [];
+      return genericRepairs[device] || [];
+    })();
+    const repairTime = st.repairIdx !== null ? (repairs[st.repairIdx]?.time || '') : '';
+    setSlotsLoading(true);
+    fetch(`/api/get-slots?repairTime=${encodeURIComponent(repairTime)}`)
+      .then(r => r.json())
+      .then(({ slots }) => { if (slots?.length) setSlots(slots); })
+      .catch(() => {})
+      .finally(() => setSlotsLoading(false));
+  }, [st.step]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // ── Repair helpers ─────────────────────────────────────────────────────────
   function getRepairs() {
@@ -1036,20 +1058,26 @@ export default function App() {
             <span style={{ fontSize: 12, color: 'var(--color-text-tertiary)' }}>Nearest stations: Arnos Grove, Finchley Central</span>
           </div>
         </div>
-        <div className="day-tabs">
-          {SLOTS.map((s, i) => (
-            <button key={i} className={`day-tab ${st.dayIdx === i ? 'active' : ''}`}
-              onClick={() => set({ dayIdx: i, slot: null })}>{s.label}</button>
-          ))}
-        </div>
-        <div className="time-grid">
-          {SLOTS[st.dayIdx].times.length > 0
-            ? SLOTS[st.dayIdx].times.map(t => (
-                <button key={t} className={`time-slot ${st.slot === t ? 'selected' : ''}`}
-                  onClick={() => { set({ slot: t }); go(6); }}>{t}</button>
-              ))
-            : <p className="no-slots">No slots — try another day</p>}
-        </div>
+        {slotsLoading ? (
+          <p className="section-sub" style={{ textAlign: 'center', padding: '2rem 0' }}>Checking availability…</p>
+        ) : (
+          <>
+            <div className="day-tabs">
+              {SLOTS.map((s, i) => (
+                <button key={i} className={`day-tab ${st.dayIdx === i ? 'active' : ''}`}
+                  onClick={() => set({ dayIdx: i, slot: null })}>{s.label}</button>
+              ))}
+            </div>
+            <div className="time-grid">
+              {SLOTS[st.dayIdx].times.length > 0
+                ? SLOTS[st.dayIdx].times.map(t => (
+                    <button key={t} className={`time-slot ${st.slot === t ? 'selected' : ''}`}
+                      onClick={() => { set({ slot: t }); go(6); }}>{t}</button>
+                  ))
+                : <p className="no-slots">No slots — try another day</p>}
+            </div>
+          </>
+        )}
         <div style={{ marginTop: '1.5rem' }}>
           <button className="btn-back-full" onClick={() => go(4)}><i className="ti ti-arrow-left" aria-hidden="true" /> Back</button>
         </div>
