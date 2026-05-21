@@ -145,6 +145,22 @@ function shopEmailHTML(booking) {
 </html>`;
 }
 
+// ── Parse repair time string to milliseconds (use upper bound) ────────────
+function parseDurationMs(timeStr) {
+  if (!timeStr) return 2 * 60 * 60 * 1000;
+  const hoursMatch = timeStr.match(/(\d+)\s*(?:–|-)\s*(\d+)\s*hr/i) || timeStr.match(/(\d+)\s*hr/i);
+  const minsMatch  = timeStr.match(/(\d+)\s*(?:–|-)\s*(\d+)\s*min/i) || timeStr.match(/(\d+)\s*min/i);
+  if (hoursMatch) {
+    const hrs = parseInt(hoursMatch[2] || hoursMatch[1]);
+    return hrs * 60 * 60 * 1000;
+  }
+  if (minsMatch) {
+    const mins = parseInt(minsMatch[2] || minsMatch[1]);
+    return mins * 60 * 1000;
+  }
+  return 2 * 60 * 60 * 1000;
+}
+
 // ── Google Calendar helper ─────────────────────────────────────────────────
 async function createCalendarEvent(booking) {
   const auth = new google.auth.JWT({
@@ -154,11 +170,12 @@ async function createCalendarEvent(booking) {
   });
 
   const calendar = google.calendar({ version: 'v3', auth });
-  const { slotDate, slotTime, device, repair, customer, phone, email, payMode, paidAmount, repairCost, ref } = booking;
+  const { slotDate, slotTime, device, repair, repairTime, customer, phone, email, payMode, paidAmount, repairCost, ref } = booking;
 
   const year = new Date().getFullYear();
   const startDate = new Date(`${slotDate} ${year} ${slotTime}`);
-  const endDate = new Date(startDate.getTime() + 2 * 60 * 60 * 1000);
+  const durationMs = parseDurationMs(repairTime);
+  const endDate = new Date(startDate.getTime() + durationMs);
 
   const balanceDue = repairCost - paidAmount;
   const payLabel = payMode === 'deposit'

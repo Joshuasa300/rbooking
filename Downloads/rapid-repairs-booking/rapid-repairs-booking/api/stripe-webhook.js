@@ -55,6 +55,7 @@ module.exports = async (req, res) => {
           customer:   meta.customer   || '',
           phone:      meta.phone      || '',
           email:      meta.email      || '',
+          repairTime: meta.repairTime || '',
         }),
       });
     } catch (err) {

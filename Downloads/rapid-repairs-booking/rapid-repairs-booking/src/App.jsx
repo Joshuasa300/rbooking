@@ -1085,6 +1085,7 @@ export default function App() {
             metadata: {
               device: st.model || st.ipadMod || st.device,
               repair: getSelectedRepair()?.name || '',
+              repairTime: getSelectedRepair()?.time || '',
               slot: `${SLOTS[st.dayIdx].label} at ${st.slot}`,
               name: `${form.fname} ${form.lname}`,
               phone: form.phone,
