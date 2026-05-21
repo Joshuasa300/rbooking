@@ -11,7 +11,7 @@ import {
 } from './data';
 import './styles.css';
 
-const stripePromise = loadStripe('pk_live_51SRIrO3cf82TqVsnUJGnzRaneumXSuGACesctDl5wGh7xekVzdCSDh7Nq77WCzqHkyW0Y3j9xlBIwfABRDR3VN0h00HcUMduws');
+const stripePromise = loadStripe('pk_test_51TYzi6KoRggKE9P0Wob1UamWwHJ0ECkRRrtDPOACZeWQ95CflINJ9of0jANaVweD18ZsEs7ejhPDhbSre7funyVG00Zn11Esp0');
 
 // ── iPhone SVG silhouette (model-accurate: island / notch / home-button) ─────
 function IPhoneSVG({ size = 'std', top = 'island', svgHeight = 90 }) {
@@ -1066,7 +1066,7 @@ export default function App() {
     const [errMsg, setErrMsg] = useState('');
     const c = payMode === 'deposit' ? DEPOSIT_AMOUNT : repairPrice;
     const valid = form.fname && form.lname && form.phone && form.email;
-    const upd = (k, v) => { const u = { ...form, [k]: v }; setForm(u); set({ details: u }); };
+    const upd = (k, v) => { const u = { ...form, [k]: v }; setForm(u); };
     const switchMode = (mode) => { setPayMode(mode); set({ payMode: mode }); };
 
     const handlePay = async () => {
