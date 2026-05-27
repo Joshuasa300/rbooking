@@ -1188,6 +1188,11 @@ export default function App() {
           <label className="form-label" style={{ marginBottom: 10, display: 'block' }}>Card details</label>
           <PaymentElement />
         </div>
+        {['samsung', 'google', 'ipad'].includes(st.device) && /screen|battery/i.test(getSelectedRepair()?.name || '') && (
+          <p style={{ color: '#cc0000', fontSize: 13, margin: '8px 0 0', lineHeight: 1.4 }}>
+            Part may take 1–3 business days to be ordered
+          </p>
+        )}
         <div className="pay-summary">
           <span>Paying now</span>
           <span className="pay-summary-amount">£{c}</span>
