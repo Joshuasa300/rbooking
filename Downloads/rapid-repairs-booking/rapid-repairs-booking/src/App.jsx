@@ -710,9 +710,14 @@ export default function App() {
   }
 
   const repairPrice = getSelectedRepairs().reduce((sum, r) => sum + (r?.price || 0), 0);
-  const depositAmount = (st.device === 'ipad' && getSelectedRepairs().some(r =>
-    r.name === 'Screen + LCD' || r.sub === 'Full screen replacement'
-  )) ? 100 : DEPOSIT_AMOUNT;
+  const depositAmount = (() => {
+    const sel = getSelectedRepairs();
+    const hasScreen = sel.some(r => /screen/i.test(r.name || ''));
+    if (st.device === 'ipad' && sel.some(r => r.name === 'Screen + LCD' || r.sub === 'Full screen replacement')) return 100;
+    if (st.device === 'samsung' && st.series !== 'a' && hasScreen) return 100;
+    if (st.device === 'google' && hasScreen) return 100;
+    return DEPOSIT_AMOUNT;
+  })();
   const charge = st.payMode === 'deposit' ? depositAmount : repairPrice;
 
   // ── Progress labels ────────────────────────────────────────────────────────
