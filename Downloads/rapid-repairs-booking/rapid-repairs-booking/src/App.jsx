@@ -1241,7 +1241,8 @@ export default function App() {
       <div className="step-panel">
         <p className="section-title">Your details & payment</p>
         <p className="section-sub">Card details handled securely by Stripe.</p>
-        {['samsung', 'google', 'ipad'].includes(st.device) && getSelectedRepairs().some(r => /screen|battery/i.test(r?.name || '')) && (
+        {((['samsung', 'google', 'ipad'].includes(st.device) && getSelectedRepairs().some(r => /screen|battery/i.test(r?.name || ''))) ||
+          (st.device === 'iphone' && getSelectedRepairs().some(r => r?.name === 'Screen – Premium'))) && (
           <p style={{ color: '#cc0000', fontSize: 13, margin: '0 0 12px', lineHeight: 1.4 }}>
             Part may take 1–3 business days to be ordered
           </p>
