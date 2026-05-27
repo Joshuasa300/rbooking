@@ -228,7 +228,7 @@ module.exports = async (req, res) => {
   try {
     const {
       ref, device, repair, repairCost, slotDate, slotTime,
-      payMode, paidAmount, customer, phone, email,
+      payMode, paidAmount, customer, phone, email, repairTime,
     } = req.body;
 
     if (!device || !repair || !phone || !customer) {
@@ -262,7 +262,7 @@ module.exports = async (req, res) => {
       `Ref: ${ref}`,
     ].join('\n');
 
-    const booking = { ref, device, repair, repairCost, slotDate, slotTime, payMode, paidAmount, customer, phone, email };
+    const booking = { ref, device, repair, repairCost, slotDate, slotTime, payMode, paidAmount, customer, phone, email, repairTime };
 
     await Promise.all([
       // SMS to customer

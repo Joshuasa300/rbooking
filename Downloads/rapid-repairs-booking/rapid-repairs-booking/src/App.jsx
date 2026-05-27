@@ -1213,24 +1213,6 @@ export default function App() {
 
         const ref = 'RR-' + Math.floor(10000 + Math.random() * 90000);
         set({ step: 90, paidAmount: c, bookingRef: ref });
-
-        fetch('/api/confirm-booking', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            ref,
-            device: st.model || st.ipadMod || st.device,
-            repair: getSelectedRepairs().map(r => r.name).join(', '),
-            repairCost: repairPrice,
-            slotDate: SLOTS[st.dayIdx].label,
-            slotTime: st.slot,
-            payMode,
-            paidAmount: c,
-            customer: `${form.fname} ${form.lname}`,
-            phone: form.phone,
-            email: form.email,
-          }),
-        }).catch(console.error);
       } catch (err) {
         setErrMsg(err.message || 'Payment failed. Please try again.');
         setLoading(false);
