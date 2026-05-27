@@ -1162,6 +1162,11 @@ export default function App() {
       <div className="step-panel">
         <p className="section-title">Your details & payment</p>
         <p className="section-sub">Card details handled securely by Stripe.</p>
+        {['samsung', 'google', 'ipad'].includes(st.device) && /screen|battery/i.test(getSelectedRepair()?.name || '') && (
+          <p style={{ color: '#cc0000', fontSize: 13, margin: '0 0 12px', lineHeight: 1.4 }}>
+            Part may take 1–3 business days to be ordered
+          </p>
+        )}
         <div className="pay-toggle">
           <button className={`pay-option ${payMode === 'deposit' ? 'selected' : ''}`} onClick={() => switchMode('deposit')}>
             <div className="pay-option-label">Pay deposit</div>
@@ -1188,11 +1193,6 @@ export default function App() {
           <label className="form-label" style={{ marginBottom: 10, display: 'block' }}>Card details</label>
           <PaymentElement />
         </div>
-        {['samsung', 'google', 'ipad'].includes(st.device) && /screen|battery/i.test(getSelectedRepair()?.name || '') && (
-          <p style={{ color: '#cc0000', fontSize: 13, margin: '8px 0 0', lineHeight: 1.4 }}>
-            Part may take 1–3 business days to be ordered
-          </p>
-        )}
         <div className="pay-summary">
           <span>Paying now</span>
           <span className="pay-summary-amount">£{c}</span>
