@@ -148,7 +148,7 @@ body { background: var(--bg); font-family: var(--font); color: var(--text-primar
   font-family: var(--font); transition: all .15s; width: 100%; text-align: left;
 }
 .repair-item:hover { border-color: var(--border-strong); background: var(--bg); }
-.repair-item.selected { border: 2px solid var(--accent); }
+.repair-item.selected { border: 2px solid var(--accent); background: #f7f7f5; }
 .repair-name { font-size: 14px; font-weight: 500; color: var(--text-primary); }
 .repair-subtitle { font-size: 11px; color: var(--text-muted); font-style: italic; margin-top: 1px; }
 .repair-time { font-size: 12px; color: var(--text-muted); margin-top: 2px; }

@@ -613,7 +613,7 @@ export default function App() {
     // Google/other
     pixelMod: null,
     // Repair
-    repairIdx: null,
+    repairIdxs: [],
     // Timeslot/payment
     dayIdx: 0, slot: null, payMode: 'deposit',
     // Forms
@@ -645,7 +645,18 @@ export default function App() {
       if (device === 'google')  return pixelRepairs[model] || genericRepairs.google || [];
       return genericRepairs[device] || [];
     })();
-    const repairTime = st.repairIdx !== null ? (repairs[st.repairIdx]?.time || '') : '';
+    function parseMinsLocal(t) {
+      if (!t) return 0;
+      const hm = t.match(/(\d+)\s*(?:–|-)\s*(\d+)\s*hr/i) || t.match(/(\d+)\s*hr/i);
+      const mm = t.match(/(\d+)\s*(?:–|-)\s*(\d+)\s*min/i) || t.match(/(\d+)\s*min/i);
+      if (hm) return parseInt(hm[2] || hm[1]) * 60;
+      if (mm) return parseInt(mm[2] || mm[1]);
+      return 0;
+    }
+    const selected = st.repairIdxs.map(i => repairs[i]).filter(Boolean);
+    const repairTime = selected.length
+      ? selected.reduce((best, r) => parseMinsLocal(r.time) >= parseMinsLocal(best) ? r.time : best, selected[0].time || '')
+      : '';
     setSlotsLoading(true);
     fetch(`/api/get-slots?repairTime=${encodeURIComponent(repairTime)}`)
       .then(r => r.json())
@@ -665,24 +676,40 @@ export default function App() {
     return genericRepairs[device] || [];
   }
 
-  function getSelectedRepair() {
+  function getSelectedRepairs() {
     const rps = getRepairs();
-    return st.repairIdx !== null ? rps[st.repairIdx] : null;
+    return st.repairIdxs.map(i => rps[i]).filter(Boolean);
+  }
+
+  function getSelectedRepair() {
+    return getSelectedRepairs()[0] || null;
+  }
+
+  function getLongestRepairTime() {
+    const selected = getSelectedRepairs();
+    if (!selected.length) return '';
+    function parseMins(t) {
+      if (!t) return 0;
+      const hm = t.match(/(\d+)\s*(?:–|-)\s*(\d+)\s*hr/i) || t.match(/(\d+)\s*hr/i);
+      const mm = t.match(/(\d+)\s*(?:–|-)\s*(\d+)\s*min/i) || t.match(/(\d+)\s*min/i);
+      if (hm) return parseInt(hm[2] || hm[1]) * 60;
+      if (mm) return parseInt(mm[2] || mm[1]);
+      return 0;
+    }
+    return selected.reduce((best, r) => parseMins(r.time) >= parseMins(best) ? r.time : best, selected[0].time || '');
   }
 
   function isQuoteRepair() {
-    const r = getSelectedRepair();
-    return r && r.quote === true && !r.price;
+    return getSelectedRepairs().some(r => r.quote === true && !r.price);
   }
 
   function isMotherboardRepair() {
     if (st.device === 'macbook') return st.mbCard === 'motherboard';
     if (st.device === 'other_laptop') return st.ltCard === 'motherboard';
-    const r = getSelectedRepair();
-    return r && r.name && r.name.includes('Motherboard');
+    return getSelectedRepairs().some(r => r?.name?.includes('Motherboard'));
   }
 
-  const repairPrice = (() => { const r = getSelectedRepair(); return r?.price || 0; })();
+  const repairPrice = getSelectedRepairs().reduce((sum, r) => sum + (r?.price || 0), 0);
   const charge = st.payMode === 'deposit' ? DEPOSIT_AMOUNT : repairPrice;
 
   // ── Progress labels ────────────────────────────────────────────────────────
@@ -795,7 +822,7 @@ export default function App() {
         <div className="cat-grid">
           {categories.map(c => (
             <button key={c.id} className="cat-card"
-              onClick={() => { set({ cat: c.id, device: null, series: null, model: null, ipadSer: null, ipadMod: null, mbCard: null, pixelMod: null, repairIdx: null }); go(1); }}>
+              onClick={() => { set({ cat: c.id, device: null, series: null, model: null, ipadSer: null, ipadMod: null, mbCard: null, pixelMod: null, repairIdxs: [] }); go(1); }}>
               <span className="cat-icon">{c.icon}</span>
               <div className="cat-name">{c.name}</div>
               <div className="cat-sub">{c.sub}</div>
@@ -815,7 +842,7 @@ export default function App() {
         <div className="dev-list">
           {devs.map(d => (
             <button key={d.id} className="dev-item"
-              onClick={() => { set({ device: d.id, series: null, model: null, ipadSer: null, ipadMod: null, mbCard: null, pixelMod: null, repairIdx: null }); go(2); }}>
+              onClick={() => { set({ device: d.id, series: null, model: null, ipadSer: null, ipadMod: null, mbCard: null, pixelMod: null, repairIdxs: [] }); go(2); }}>
               <i className={`ti ${d.icon}`} aria-hidden="true" style={{ fontSize: 22, flexShrink: 0, color: 'var(--color-text-secondary)' }} />
               <div>
                 <div className="dev-item-name">{d.name}</div>
@@ -838,7 +865,7 @@ export default function App() {
         <div className="series-grid">
           {iphoneSeries.map(s => (
             <button key={s.id} className="series-card"
-              onClick={() => { set({ series: s.id, model: null, repairIdx: null }); go(3); }}>
+              onClick={() => { set({ series: s.id, model: null, repairIdxs: [] }); go(3); }}>
               <PhoneStage {...s.svgProps} svgHeight={85} />
               <div className="series-name iphone-name">{s.name}</div>
               <div className="series-sub">{s.sub}</div>
@@ -858,7 +885,7 @@ export default function App() {
         <div className="series-grid">
           {samsungSeries.map(s => (
             <button key={s.id} className="series-card"
-              onClick={() => { set({ series: s.id, model: null, repairIdx: null }); go(3); }}>
+              onClick={() => { set({ series: s.id, model: null, repairIdxs: [] }); go(3); }}>
               {s.img
                 ? <img src={s.img} alt={s.name} className="series-photo" />
                 : <SamsungSVG type={s.svgType} selected={false} />}
@@ -880,7 +907,7 @@ export default function App() {
         <div className="model-grid">
           {PIXEL_MODELS.map(m => (
             <button key={m.name} className="model-card"
-              onClick={() => { set({ pixelMod: m.name, model: m.name, repairIdx: null }); go(4); }}>
+              onClick={() => { set({ pixelMod: m.name, model: m.name, repairIdxs: [] }); go(4); }}>
               <PixelPhoneSVG svgId={m.svgId} />
               <div className="model-name">{m.name}</div>
             </button>
@@ -899,7 +926,7 @@ export default function App() {
         <div className="series-grid">
           {IPAD_SERIES.map(s => (
             <button key={s.id} className="series-card"
-              onClick={() => { set({ ipadSer: s.id, ipadMod: null, repairIdx: null }); go(3); }}>
+              onClick={() => { set({ ipadSer: s.id, ipadMod: null, repairIdxs: [] }); go(3); }}>
               <IPadSVG variant={s.svgType} selected={false} />
               <div className="series-name">{s.name}</div>
               <div className="series-sub">{s.sub}</div>
@@ -921,7 +948,7 @@ export default function App() {
         <div className="model-grid-2">
           {models.map(m => (
             <button key={m.name} className="model-card"
-              onClick={() => { set({ ipadMod: m.name, model: m.name, repairIdx: null }); go(4); }}>
+              onClick={() => { set({ ipadMod: m.name, model: m.name, repairIdxs: [] }); go(4); }}>
               <IPadSVG variant={m.svgType || 'ipad_home_lg'} selected={false} />
               <div className="model-name">{m.name}</div>
               <div className="model-year">{m.year}</div>
@@ -945,7 +972,7 @@ export default function App() {
         <div className="model-grid">
           {models.map(m => (
             <button key={m.name} className="model-card"
-              onClick={() => { set({ model: m.name, repairIdx: null }); go(4); }}>
+              onClick={() => { set({ model: m.name, repairIdxs: [] }); go(4); }}>
               {isSamsung && m.img
                 ? <img src={m.img} alt={m.name} className="model-photo"
                     onError={e => { if (m.imgFb && e.target.src !== m.imgFb) e.target.src = m.imgFb; }} />
@@ -1005,34 +1032,78 @@ export default function App() {
 
   function StepRepair() {
     const repairs = getRepairs();
+    const [sel, setSel] = useState(st.repairIdxs);
     const showIphoneNote = repairs.some(r => r.name?.includes('Standard') || r.name?.includes('Premium'));
     const showGoogleNote = repairs.some(r => r.name?.includes('Original') || r.name?.includes('OLED'));
     const showIPadNote   = repairs.some(r => r.name === 'Screen + LCD');
-    const backStep = st.device === 'google' ? 2 : st.device === 'ipad' ? 3 : 3;
+    const backStep = st.device === 'google' ? 2 : 3;
+    const selTotal = sel.reduce((s, i) => s + (repairs[i]?.price || 0), 0);
+
+    function toggle(i) {
+      const r = repairs[i];
+      if (r.quote && !r.price) {
+        set({ repairIdxs: [i] });
+        go(80);
+        return;
+      }
+      setSel(prev => prev.includes(i) ? prev.filter(x => x !== i) : [...prev, i]);
+    }
+
+    function handleContinue() {
+      set({ repairIdxs: sel });
+      go(5);
+    }
+
     return (
       <div className="step-panel">
         <p className="section-title">{st.model || st.ipadMod}</p>
-        <p className="section-sub">Tap a repair to book. All prices include parts and labour.</p>
+        <p className="section-sub">Select one or more repairs. All prices include parts and labour.</p>
         <div className="warranty-pill"><span className="pill-dot" /> 90-day warranty · No fix, no fee</div>
         <div className="repair-list">
           {repairs.map((r, i) => {
             const isQ = r.quote && !r.price;
             const ps = isQ ? (r.priceStr || 'Get a quote') : r.priceStr ? r.priceStr : `£${r.price}`;
+            const isSel = sel.includes(i);
             return (
-              <button key={i} className="repair-item"
-                onClick={() => { set({ repairIdx: i }); isQ ? go(80) : go(5); }}>
-                <div>
-                  <div className="repair-name">{r.name}</div>
-                  {r.sub && <div className="repair-subtitle">{r.sub}</div>}
-                  <div className="repair-time"><i className="ti ti-clock" aria-hidden="true" style={{ fontSize: 11 }} /> {r.time}</div>
+              <button key={i} className={`repair-item${isSel ? ' selected' : ''}`}
+                onClick={() => toggle(i)}>
+                <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10, flex: 1, minWidth: 0 }}>
+                  <div style={{ marginTop: 3, flexShrink: 0 }}>
+                    {isQ
+                      ? <i className="ti ti-arrow-right" aria-hidden="true" style={{ fontSize: 14, color: 'var(--color-text-secondary)' }} />
+                      : <div style={{
+                          width: 18, height: 18, borderRadius: 4, border: `2px solid ${isSel ? '#111' : '#ccc'}`,
+                          background: isSel ? '#111' : 'transparent',
+                          display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+                        }}>
+                          {isSel && <i className="ti ti-check" aria-hidden="true" style={{ fontSize: 11, color: '#fff' }} />}
+                        </div>
+                    }
+                  </div>
+                  <div style={{ minWidth: 0 }}>
+                    <div className="repair-name">{r.name}</div>
+                    {r.sub && <div className="repair-subtitle">{r.sub}</div>}
+                    {r.time && <div className="repair-time"><i className="ti ti-clock" aria-hidden="true" style={{ fontSize: 11 }} /> {r.time}</div>}
+                  </div>
                 </div>
-                <div className={`repair-price ${isQ && !r.priceStr ? 'quote-pill' : ''}`}>{ps}</div>
+                <div className={`repair-price${isQ && !r.priceStr ? ' quote-pill' : ''}`}>{ps}</div>
               </button>
             );
           })}
         </div>
+        {sel.length > 0 && (
+          <div style={{ marginTop: 16 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 10, fontSize: 14, color: 'var(--color-text-secondary)' }}>
+              <span>{sel.length} repair{sel.length > 1 ? 's' : ''} selected</span>
+              <span style={{ fontWeight: 700, color: 'var(--color-text-primary)' }}>Total: £{selTotal}</span>
+            </div>
+            <button className="btn-primary" style={{ width: '100%' }} onClick={handleContinue}>
+              Continue <i className="ti ti-arrow-right" aria-hidden="true" />
+            </button>
+          </div>
+        )}
         {(showIphoneNote || showGoogleNote || showIPadNote) && (
-          <div className="disclaimer-box">
+          <div className="disclaimer-box" style={{ marginTop: 16 }}>
             <div className="disclaimer-title">Screen options explained</div>
             <p className="disclaimer-text">
               {showIphoneNote ? SCREEN_DISCLAIMER :
@@ -1112,8 +1183,8 @@ export default function App() {
             amount: c * 100,
             metadata: {
               device: st.model || st.ipadMod || st.device,
-              repair: getSelectedRepair()?.name || '',
-              repairTime: getSelectedRepair()?.time || '',
+              repair: getSelectedRepairs().map(r => r.name).join(', '),
+              repairTime: getLongestRepairTime(),
               slot: `${SLOTS[st.dayIdx].label} at ${st.slot}`,
               name: `${form.fname} ${form.lname}`,
               phone: form.phone,
@@ -1141,7 +1212,7 @@ export default function App() {
           body: JSON.stringify({
             ref,
             device: st.model || st.ipadMod || st.device,
-            repair: getSelectedRepair()?.name || '',
+            repair: getSelectedRepairs().map(r => r.name).join(', '),
             repairCost: repairPrice,
             slotDate: SLOTS[st.dayIdx].label,
             slotTime: st.slot,
@@ -1162,7 +1233,7 @@ export default function App() {
       <div className="step-panel">
         <p className="section-title">Your details & payment</p>
         <p className="section-sub">Card details handled securely by Stripe.</p>
-        {['samsung', 'google', 'ipad'].includes(st.device) && /screen|battery/i.test(getSelectedRepair()?.name || '') && (
+        {['samsung', 'google', 'ipad'].includes(st.device) && getSelectedRepairs().some(r => /screen|battery/i.test(r?.name || '')) && (
           <p style={{ color: '#cc0000', fontSize: 13, margin: '0 0 12px', lineHeight: 1.4 }}>
             Part may take 1–3 business days to be ordered
           </p>
