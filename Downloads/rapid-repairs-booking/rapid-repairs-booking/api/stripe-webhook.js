@@ -9,6 +9,7 @@
 //   Events to listen: payment_intent.succeeded
 
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+const processBooking = require('./confirm-booking');
 
 async function getRawBody(req) {
   return new Promise((resolve, reject) => {
@@ -43,34 +44,20 @@ async function handler(req, res) {
     const pi = event.data.object;
     const meta = pi.metadata || {};
 
-    try {
-      const baseUrl = process.env.PRODUCTION_URL
-        ? `https://${process.env.PRODUCTION_URL}`
-        : process.env.VERCEL_URL
-          ? `https://${process.env.VERCEL_URL}`
-          : 'http://localhost:3000';
-
-      await fetch(`${baseUrl}/api/confirm-booking`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          ref:        meta.ref        || `RR-${Date.now()}`,
-          device:     meta.device     || 'Unknown device',
-          repair:     meta.repair     || 'Unknown repair',
-          repairCost: parseInt(meta.repairCost || '0'),
-          slotDate:   meta.slotDate   || '',
-          slotTime:   meta.slotTime   || '',
-          payMode:    meta.payMode    || 'deposit',
-          paidAmount: Math.round(pi.amount / 100),
-          customer:   meta.customer   || '',
-          phone:      meta.phone      || '',
-          email:      meta.email      || '',
-          repairTime: meta.repairTime || '',
-        }),
-      });
-    } catch (err) {
-      console.error('Failed to trigger confirm-booking:', err);
-    }
+    await processBooking({
+      ref:        meta.ref        || `RR-${Date.now()}`,
+      device:     meta.device     || 'Unknown device',
+      repair:     meta.repair     || 'Unknown repair',
+      repairCost: parseInt(meta.repairCost || '0'),
+      slotDate:   meta.slotDate   || '',
+      slotTime:   meta.slotTime   || '',
+      payMode:    meta.payMode    || 'deposit',
+      paidAmount: Math.round(pi.amount / 100),
+      customer:   meta.customer   || '',
+      phone:      meta.phone      || '',
+      email:      meta.email      || '',
+      repairTime: meta.repairTime || '',
+    }).catch(err => console.error('processBooking failed:', err));
   }
 
   res.status(200).json({ received: true });

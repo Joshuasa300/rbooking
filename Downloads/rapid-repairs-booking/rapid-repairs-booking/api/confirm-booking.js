@@ -221,70 +221,63 @@ async function createCalendarEvent(booking) {
   });
 }
 
-// ── Main handler ───────────────────────────────────────────────────────────
-module.exports = async (req, res) => {
+// ── Core booking logic (called directly by stripe-webhook) ────────────────
+async function processBooking({ ref, device, repair, repairCost, slotDate, slotTime, payMode, paidAmount, customer, phone, email, repairTime }) {
+  if (!device || !repair || !phone || !customer) throw new Error('Missing required booking fields');
+
+  const balanceDue = repairCost - paidAmount;
+  const firstName = customer.split(' ')[0];
+
+  const customerSMS = [
+    `Hi ${firstName}, your repair is booked at Rapid Repairs!`,
+    ``,
+    `Device: ${device}`,
+    `Repair: ${repair}`,
+    `Slot: ${slotDate} at ${slotTime}`,
+    `Ref: ${ref}`,
+    ``,
+    payMode === 'deposit'
+      ? `Deposit of £${paidAmount} received. Bring £${balanceDue} on the day.`
+      : `Fully paid - nothing more to pay.`,
+    ``,
+    `193 Summers Lane, Finchley N12 0LA`,
+  ].join('\n');
+
+  const shopSMS = [
+    `New booking - Rapid Repairs`,
+    `${customer} | ${phone}`,
+    `${device} - ${repair}`,
+    `${slotDate} at ${slotTime}`,
+    payMode === 'deposit' ? `£${paidAmount} deposit, £${balanceDue} to collect` : `£${paidAmount} paid in full`,
+    `Ref: ${ref}`,
+  ].join('\n');
+
+  const booking = { ref, device, repair, repairCost, slotDate, slotTime, payMode, paidAmount, customer, phone, email, repairTime };
+
+  await Promise.all([
+    sendSMS(phone, customerSMS).catch(e => console.error('Customer SMS failed:', e.message)),
+    sendSMS(process.env.SHOP_PHONE, shopSMS).catch(e => console.error('Shop SMS failed:', e.message)),
+    sendEmail({
+      to: email,
+      subject: `Booking confirmed — ${device} repair (${ref})`,
+      html: customerEmailHTML(booking),
+    }).catch(e => console.error('Customer email failed:', e.message)),
+    sendEmail({
+      to: process.env.SHOP_EMAIL,
+      subject: `New booking: ${customer} — ${device} ${slotDate} at ${slotTime}`,
+      html: shopEmailHTML(booking),
+    }).catch(e => console.error('Shop email failed:', e.message)),
+    createCalendarEvent(booking).catch(e => console.error('Calendar failed:', e.message)),
+  ]);
+}
+
+module.exports = processBooking;
+
+// ── HTTP handler (kept for manual/admin use) ───────────────────────────────
+module.exports.handler = async (req, res) => {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
-
   try {
-    const {
-      ref, device, repair, repairCost, slotDate, slotTime,
-      payMode, paidAmount, customer, phone, email, repairTime,
-    } = req.body;
-
-    if (!device || !repair || !phone || !customer) {
-      return res.status(400).json({ error: 'Missing required booking fields' });
-    }
-
-    const balanceDue = repairCost - paidAmount;
-    const firstName = customer.split(' ')[0];
-
-    const customerSMS = [
-      `Hi ${firstName}, your repair is booked at Rapid Repairs!`,
-      ``,
-      `Device: ${device}`,
-      `Repair: ${repair}`,
-      `Slot: ${slotDate} at ${slotTime}`,
-      `Ref: ${ref}`,
-      ``,
-      payMode === 'deposit'
-        ? `Deposit of £${paidAmount} received. Bring £${balanceDue} on the day.`
-        : `Fully paid - nothing more to pay.`,
-      ``,
-      `193 Summers Lane, Finchley N12 0LA`,
-    ].join('\n');
-
-    const shopSMS = [
-      `New booking - Rapid Repairs`,
-      `${customer} | ${phone}`,
-      `${device} - ${repair}`,
-      `${slotDate} at ${slotTime}`,
-      payMode === 'deposit' ? `£${paidAmount} deposit, £${balanceDue} to collect` : `£${paidAmount} paid in full`,
-      `Ref: ${ref}`,
-    ].join('\n');
-
-    const booking = { ref, device, repair, repairCost, slotDate, slotTime, payMode, paidAmount, customer, phone, email, repairTime };
-
-    await Promise.all([
-      // SMS to customer
-      sendSMS(phone, customerSMS).catch(e => console.error('Customer SMS failed:', e.message)),
-      // SMS to shop
-      sendSMS(process.env.SHOP_PHONE, shopSMS).catch(e => console.error('Shop SMS failed:', e.message)),
-      // Email to customer
-      sendEmail({
-        to: email,
-        subject: `Booking confirmed — ${device} repair (${ref})`,
-        html: customerEmailHTML(booking),
-      }).catch(e => console.error('Customer email failed:', e.message)),
-      // Email to shop
-      sendEmail({
-        to: process.env.SHOP_EMAIL,
-        subject: `New booking: ${customer} — ${device} ${slotDate} at ${slotTime}`,
-        html: shopEmailHTML(booking),
-      }).catch(e => console.error('Shop email failed:', e.message)),
-      // Google Calendar
-      createCalendarEvent(booking).catch(e => console.error('Calendar failed:', e.message)),
-    ]);
-
+    await processBooking(req.body);
     res.status(200).json({ success: true });
   } catch (error) {
     console.error('Confirm booking error:', error);
