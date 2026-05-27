@@ -10,18 +10,27 @@
 
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
-module.exports = async (req, res) => {
+async function getRawBody(req) {
+  return new Promise((resolve, reject) => {
+    const chunks = [];
+    req.on('data', chunk => chunks.push(chunk));
+    req.on('end', () => resolve(Buffer.concat(chunks)));
+    req.on('error', reject);
+  });
+}
+
+async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
+  const rawBody = await getRawBody(req);
   const sig = req.headers['stripe-signature'];
   let event;
 
   try {
-    // Verify the webhook came from Stripe (not a fake request)
     event = stripe.webhooks.constructEvent(
-      req.body,                          // raw body — Vercel passes this as Buffer
+      rawBody,
       sig,
       process.env.STRIPE_WEBHOOK_SECRET
     );
@@ -34,7 +43,6 @@ module.exports = async (req, res) => {
     const pi = event.data.object;
     const meta = pi.metadata || {};
 
-    // Call our confirm-booking API internally
     try {
       const baseUrl = process.env.VERCEL_URL
         ? `https://${process.env.VERCEL_URL}`
@@ -51,7 +59,7 @@ module.exports = async (req, res) => {
           slotDate:   meta.slotDate   || '',
           slotTime:   meta.slotTime   || '',
           payMode:    meta.payMode    || 'deposit',
-          paidAmount: Math.round(pi.amount / 100), // convert pence to £
+          paidAmount: Math.round(pi.amount / 100),
           customer:   meta.customer   || '',
           phone:      meta.phone      || '',
           email:      meta.email      || '',
@@ -60,9 +68,11 @@ module.exports = async (req, res) => {
       });
     } catch (err) {
       console.error('Failed to trigger confirm-booking:', err);
-      // Still return 200 to Stripe — don't want Stripe to retry
     }
   }
 
   res.status(200).json({ received: true });
-};
+}
+
+handler.config = { api: { bodyParser: false } };
+module.exports = handler;
