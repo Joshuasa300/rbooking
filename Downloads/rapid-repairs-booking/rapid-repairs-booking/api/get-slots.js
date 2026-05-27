@@ -38,17 +38,23 @@ module.exports = async (req, res) => {
   const durationMins = parseDurationMins(req.query.repairTime || '');
 
   const now = new Date();
+  const cutoffMs = now.getTime() + 3 * 60 * 60 * 1000; // 3 hrs from now
+
   const days = [];
   for (let d = 0; d < 7; d++) {
     const date = new Date(now);
-    date.setUTCDate(now.getUTCDate() + d + 1);
+    date.setUTCDate(now.getUTCDate() + d);
     days.push({
       date,
       label: `${DAY_NAMES[date.getUTCDay()]} ${date.getUTCDate()} ${MONTH_NAMES[date.getUTCMonth()]}`,
+      isToday: d === 0,
     });
   }
 
-  const fallback = days.map(({ label }) => ({ label, times: TIMES }));
+  const fallback = days.map(({ date, label, isToday }) => ({
+    label,
+    times: TIMES.filter(time => !isToday || slotToUTC(date, time).getTime() >= cutoffMs),
+  }));
 
   if (!process.env.GOOGLE_CLIENT_EMAIL || !process.env.GOOGLE_PRIVATE_KEY || !process.env.GOOGLE_CALENDAR_ID) {
     return res.status(200).json({ slots: fallback });
@@ -63,7 +69,7 @@ module.exports = async (req, res) => {
 
     const calendar = google.calendar({ version: 'v3', auth });
 
-    const timeMin = slotToUTC(days[0].date, '00:00').toISOString();
+    const timeMin = now.toISOString();
     const lastDay = days[days.length - 1].date;
     const dayAfter = new Date(lastDay);
     dayAfter.setUTCDate(lastDay.getUTCDate() + 1);
@@ -81,10 +87,11 @@ module.exports = async (req, res) => {
     const busyPeriods = (fbRes.data.calendars[process.env.GOOGLE_CALENDAR_ID]?.busy || [])
       .map(b => ({ start: new Date(b.start), end: new Date(b.end) }));
 
-    const slots = days.map(({ date, label }) => {
+    const slots = days.map(({ date, label, isToday }) => {
       const freeTimes = TIMES.filter(time => {
         const slotStart = slotToUTC(date, time);
-        const slotEnd   = new Date(slotStart.getTime() + durationMins * 60 * 1000);
+        if (isToday && slotStart.getTime() < cutoffMs) return false;
+        const slotEnd = new Date(slotStart.getTime() + durationMins * 60 * 1000);
         return !busyPeriods.some(b => slotStart < b.end && slotEnd > b.start);
       });
       return { label, times: freeTimes };
