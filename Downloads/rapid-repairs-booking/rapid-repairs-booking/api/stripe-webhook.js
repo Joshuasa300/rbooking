@@ -44,9 +44,11 @@ async function handler(req, res) {
     const meta = pi.metadata || {};
 
     try {
-      const baseUrl = process.env.VERCEL_URL
-        ? `https://${process.env.VERCEL_URL}`
-        : 'http://localhost:3000';
+      const baseUrl = process.env.PRODUCTION_URL
+        ? `https://${process.env.PRODUCTION_URL}`
+        : process.env.VERCEL_URL
+          ? `https://${process.env.VERCEL_URL}`
+          : 'http://localhost:3000';
 
       await fetch(`${baseUrl}/api/confirm-booking`, {
         method: 'POST',
