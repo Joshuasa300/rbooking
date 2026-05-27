@@ -1184,19 +1184,24 @@ export default function App() {
         const { error: submitErr } = await elements.submit();
         if (submitErr) { setErrMsg(submitErr.message); setLoading(false); return; }
 
+        const ref = 'RR-' + Math.floor(10000 + Math.random() * 90000);
         const res = await fetch('/api/create-payment-intent', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             amount: c * 100,
             metadata: {
-              device: st.model || st.ipadMod || st.device,
-              repair: getSelectedRepairs().map(r => r.name).join(', '),
+              ref,
+              device:     st.model || st.ipadMod || st.device,
+              repair:     getSelectedRepairs().map(r => r.name).join(', '),
               repairTime: getLongestRepairTime(),
-              slot: `${SLOTS[st.dayIdx].label} at ${st.slot}`,
-              name: `${form.fname} ${form.lname}`,
-              phone: form.phone,
-              email: form.email,
+              slotDate:   SLOTS[st.dayIdx].label,
+              slotTime:   st.slot,
+              repairCost: String(repairPrice),
+              payMode,
+              customer:   `${form.fname} ${form.lname}`,
+              phone:      form.phone,
+              email:      form.email,
             },
           }),
         });
@@ -1210,8 +1215,6 @@ export default function App() {
           redirect: 'if_required',
         });
         if (payErr) throw new Error(payErr.message);
-
-        const ref = 'RR-' + Math.floor(10000 + Math.random() * 90000);
         set({ step: 90, paidAmount: c, bookingRef: ref });
       } catch (err) {
         setErrMsg(err.message || 'Payment failed. Please try again.');

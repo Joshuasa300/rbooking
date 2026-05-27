@@ -20,14 +20,9 @@ module.exports = async (req, res) => {
       amount,        // in pence, e.g. 3500 = £35
       currency,
       automatic_payment_methods: { enabled: true },
-      metadata: {
-        device: metadata.device || '',
-        repair: metadata.repair || '',
-        slot:   metadata.slot   || '',
-        name:   metadata.name   || '',
-        phone:  metadata.phone  || '',
-        email:  metadata.email  || '',
-      },
+      metadata: Object.fromEntries(
+        Object.entries(metadata).map(([k, v]) => [k, String(v ?? '')])
+      ),
     });
 
     res.status(200).json({ clientSecret: paymentIntent.client_secret });
