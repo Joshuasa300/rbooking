@@ -710,7 +710,10 @@ export default function App() {
   }
 
   const repairPrice = getSelectedRepairs().reduce((sum, r) => sum + (r?.price || 0), 0);
-  const charge = st.payMode === 'deposit' ? DEPOSIT_AMOUNT : repairPrice;
+  const depositAmount = (st.device === 'ipad' && getSelectedRepairs().some(r =>
+    r.name === 'Screen + LCD' || r.sub === 'Full screen replacement'
+  )) ? 100 : DEPOSIT_AMOUNT;
+  const charge = st.payMode === 'deposit' ? depositAmount : repairPrice;
 
   // ── Progress labels ────────────────────────────────────────────────────────
   function getProgressLabels() {
@@ -1163,7 +1166,7 @@ export default function App() {
     const [payMode, setPayMode] = useState(st.payMode);
     const [loading, setLoading] = useState(false);
     const [errMsg, setErrMsg] = useState('');
-    const c = payMode === 'deposit' ? DEPOSIT_AMOUNT : repairPrice;
+    const c = payMode === 'deposit' ? depositAmount : repairPrice;
     const valid = form.fname && form.lname && form.phone && form.email;
     const upd = (k, v) => { const u = { ...form, [k]: v }; setForm(u); };
     const switchMode = (mode) => { setPayMode(mode); set({ payMode: mode }); };
@@ -1241,7 +1244,7 @@ export default function App() {
         <div className="pay-toggle">
           <button className={`pay-option ${payMode === 'deposit' ? 'selected' : ''}`} onClick={() => switchMode('deposit')}>
             <div className="pay-option-label">Pay deposit</div>
-            <div className="pay-option-amount">£{DEPOSIT_AMOUNT}</div>
+            <div className="pay-option-amount">£{depositAmount}</div>
             <div className="pay-option-sub">Balance on collection</div>
           </button>
           <button className={`pay-option ${payMode === 'full' ? 'selected' : ''}`} onClick={() => switchMode('full')}>
