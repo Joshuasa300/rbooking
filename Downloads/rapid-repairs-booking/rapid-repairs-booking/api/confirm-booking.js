@@ -19,12 +19,20 @@ const { Resend } = require('resend');
 const { google } = require('googleapis');
 
 // ── SMS helper ─────────────────────────────────────────────────────────────
+function normaliseUKPhone(raw) {
+  let n = raw.replace(/[\s\-().]/g, '');   // strip spaces, dashes, brackets
+  if (n.startsWith('+44'))        n = n.slice(3);
+  else if (n.startsWith('0044'))  n = n.slice(4);
+  else if (n.startsWith('44') && n.length >= 12) n = n.slice(2);  // e.g. 447911123456
+  else if (n.startsWith('0'))     n = n.slice(1);
+  return `+44${n}`;
+}
+
 async function sendSMS(to, body) {
   const client = twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
-  const toFormatted = `+44${to.replace(/^0/, '').replace(/\s/g, '')}`;
   return client.messages.create({
     from: process.env.TWILIO_SMS_FROM,
-    to: toFormatted,
+    to: normaliseUKPhone(to),
     body,
   });
 }
