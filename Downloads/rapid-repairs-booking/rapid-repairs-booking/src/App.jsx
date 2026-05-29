@@ -637,7 +637,7 @@ export default function App() {
     window.scrollTo(0, 0);
     document.documentElement.scrollTop = 0;
     document.body.scrollTop = 0;
-    try { window.top.postMessage({ type: 'scrollToTop' }, '*'); } catch (_) {}
+    try { window.parent.postMessage({ type: 'scrollToTop' }, '*'); } catch (_) {}
   }, [st.step]);
 
   // ── Fetch available slots from Google Calendar when entering time slot step ─
