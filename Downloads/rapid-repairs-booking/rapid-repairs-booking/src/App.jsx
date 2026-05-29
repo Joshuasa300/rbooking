@@ -721,6 +721,19 @@ export default function App() {
   const charge = st.payMode === 'deposit' ? depositAmount : repairPrice;
 
   // ── Progress labels ────────────────────────────────────────────────────────
+  function getBackStep() {
+    const { step, device } = st;
+    if (step === 0 || step >= 90) return null;
+    if (step === 80) return (device === 'macbook' || device === 'other_laptop') ? 2 : 4;
+    if (step === 6) return 5;
+    if (step === 5) return 4;
+    if (step === 4) return device === 'google' ? 2 : 3;
+    if (step === 3) return 2;
+    if (step === 2) return 1;
+    if (step === 1) return 0;
+    return null;
+  }
+
   function getProgressLabels() {
     const { device } = st;
     if (device === 'macbook' || device === 'other_laptop') return ['Device', 'Repair type', 'Quote'];
@@ -761,7 +774,16 @@ export default function App() {
       </div>
 
       {!isDone && st.step !== 91 && st.step !== 92 && (
-        <ProgressBar labels={labels} current={current} />
+        <>
+          {getBackStep() !== null && (
+            <div style={{ padding: '8px 20px 0' }}>
+              <button className="btn-back-full" onClick={() => go(getBackStep())}>
+                <i className="ti ti-arrow-left" aria-hidden="true" /> Back
+              </button>
+            </div>
+          )}
+          <ProgressBar labels={labels} current={current} />
+        </>
       )}
 
       <div className="step-body" style={navLock ? { pointerEvents: 'none', userSelect: 'none' } : {}}>
@@ -846,7 +868,6 @@ export default function App() {
             </button>
           ))}
         </div>
-        <button className="btn-back-full" onClick={() => go(0)}><i className="ti ti-arrow-left" aria-hidden="true" /> Back</button>
       </div>
     );
   }
@@ -866,7 +887,6 @@ export default function App() {
             </button>
           ))}
         </div>
-        <button className="btn-back-full" onClick={() => go(1)}><i className="ti ti-arrow-left" aria-hidden="true" /> Back</button>
       </div>
     );
   }
@@ -888,7 +908,6 @@ export default function App() {
             </button>
           ))}
         </div>
-        <button className="btn-back-full" onClick={() => go(1)}><i className="ti ti-arrow-left" aria-hidden="true" /> Back</button>
       </div>
     );
   }
@@ -907,7 +926,6 @@ export default function App() {
             </button>
           ))}
         </div>
-        <button className="btn-back-full" onClick={() => go(1)}><i className="ti ti-arrow-left" aria-hidden="true" /> Back</button>
       </div>
     );
   }
@@ -927,7 +945,6 @@ export default function App() {
             </button>
           ))}
         </div>
-        <button className="btn-back-full" onClick={() => go(1)}><i className="ti ti-arrow-left" aria-hidden="true" /> Back</button>
       </div>
     );
   }
@@ -949,7 +966,6 @@ export default function App() {
             </button>
           ))}
         </div>
-        <button className="btn-back-full" onClick={() => go(2)}><i className="ti ti-arrow-left" aria-hidden="true" /> Back</button>
       </div>
     );
   }
@@ -977,7 +993,6 @@ export default function App() {
             </button>
           ))}
         </div>
-        <button className="btn-back-full" onClick={() => go(2)}><i className="ti ti-arrow-left" aria-hidden="true" /> Back</button>
       </div>
     );
   }
@@ -998,7 +1013,6 @@ export default function App() {
             </button>
           ))}
         </div>
-        <button className="btn-back-full" onClick={() => go(1)}><i className="ti ti-arrow-left" aria-hidden="true" /> Back</button>
       </div>
     );
   }
@@ -1019,7 +1033,6 @@ export default function App() {
             </button>
           ))}
         </div>
-        <button className="btn-back-full" onClick={() => go(1)}><i className="ti ti-arrow-left" aria-hidden="true" /> Back</button>
       </div>
     );
   }
@@ -1106,7 +1119,6 @@ export default function App() {
             </p>
           </div>
         )}
-        <button className="btn-back-full" onClick={() => go(backStep)}><i className="ti ti-arrow-left" aria-hidden="true" /> Back</button>
       </div>
     );
   }
@@ -1143,9 +1155,6 @@ export default function App() {
             </div>
           </>
         )}
-        <div style={{ marginTop: '1.5rem' }}>
-          <button className="btn-back-full" onClick={() => go(4)}><i className="ti ti-arrow-left" aria-hidden="true" /> Back</button>
-        </div>
       </div>
     );
   }
@@ -1250,7 +1259,6 @@ export default function App() {
         </div>
         {errMsg && <div className="error-msg">{errMsg}</div>}
         <div className="btn-row">
-          <button className="btn-back" onClick={() => go(5)}><i className="ti ti-arrow-left" aria-hidden="true" /> Back</button>
           <button className="btn-primary btn-pay" onClick={handlePay} disabled={loading || !valid || !stripe}>
             {loading ? 'Processing…' : `Pay £${c} securely`} <i className="ti ti-lock" aria-hidden="true" />
           </button>
@@ -1304,7 +1312,6 @@ export default function App() {
           <textarea placeholder={ph} value={form.issue} onChange={e => upd('issue', e.target.value)} rows={3} />
         </div>
         <div className="btn-row">
-          <button className="btn-back" onClick={() => go(backStep)}><i className="ti ti-arrow-left" aria-hidden="true" /> Back</button>
           <button className="btn-primary" onClick={() => { set({ bookingRef: 'RR-Q-' + Math.floor(10000 + Math.random() * 90000) }); go(91); }} disabled={!valid}>
             Send quote request <i className="ti ti-send" aria-hidden="true" />
           </button>
@@ -1345,7 +1352,6 @@ export default function App() {
           <textarea placeholder="e.g. Cracked screen, won't charge, water damage…" value={form.issue} onChange={e => upd('issue', e.target.value)} rows={3} />
         </div>
         <div className="btn-row">
-          <button className="btn-back" onClick={() => go(1)}><i className="ti ti-arrow-left" aria-hidden="true" /> Back</button>
           <button className="btn-primary" onClick={() => go(92)} disabled={!valid}>Send enquiry <i className="ti ti-send" aria-hidden="true" /></button>
         </div>
       </div>
