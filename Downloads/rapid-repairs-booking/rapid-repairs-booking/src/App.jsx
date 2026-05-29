@@ -631,11 +631,14 @@ export default function App() {
     setNavLock(true);
     setSt(s => ({ ...s, step }));
     setTimeout(() => setNavLock(false), 350);
+  };
+
+  useEffect(() => {
     window.scrollTo(0, 0);
     document.documentElement.scrollTop = 0;
     document.body.scrollTop = 0;
     try { window.parent.postMessage({ type: 'scrollToTop' }, '*'); } catch (_) {}
-  };
+  }, [st.step]);
 
   // ── Fetch available slots from Google Calendar when entering time slot step ─
   useEffect(() => {
