@@ -776,7 +776,7 @@ export default function App() {
       {!isDone && st.step !== 91 && st.step !== 92 && (
         <>
           {getBackStep() !== null && (
-            <div style={{ padding: '8px 20px 0' }}>
+            <div style={{ padding: '12px 20px 0', marginBottom: '4px' }}>
               <button className="btn-back-full" onClick={() => go(getBackStep())}>
                 <i className="ti ti-arrow-left" aria-hidden="true" /> Back
               </button>
