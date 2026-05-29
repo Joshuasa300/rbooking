@@ -631,7 +631,10 @@ export default function App() {
     setNavLock(true);
     setSt(s => ({ ...s, step }));
     setTimeout(() => setNavLock(false), 350);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo(0, 0);
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
+    try { window.parent.postMessage({ type: 'scrollToTop' }, '*'); } catch (_) {}
   };
 
   // ── Fetch available slots from Google Calendar when entering time slot step ─
