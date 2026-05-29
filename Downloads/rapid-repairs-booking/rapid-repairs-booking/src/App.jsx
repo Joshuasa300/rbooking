@@ -1116,16 +1116,14 @@ export default function App() {
             </button>
           </div>
         )}
-        {(showIphoneNote || showGoogleNote || showIPadNote) && (
-          <div className="disclaimer-box" style={{ marginTop: 16 }}>
-            <div className="disclaimer-title">Screen options explained</div>
-            <p className="disclaimer-text">
-              {showIphoneNote ? SCREEN_DISCLAIMER :
-               showGoogleNote ? 'Original screen uses an OEM-matched panel — closest to factory quality. OLED uses a high-quality aftermarket panel at a lower price — still excellent clarity.' :
-               'Screen only replaces the outer glass/digitiser — ideal if your LCD looks fine. Screen + LCD replaces the full display assembly — needed for dark spots, colour bleed, or lines.'}
-            </p>
-          </div>
-        )}
+        <div className="disclaimer-box" style={{ marginTop: 16, minHeight: 80, visibility: (showIphoneNote || showGoogleNote || showIPadNote) ? 'visible' : 'hidden' }}>
+          <div className="disclaimer-title">Screen options explained</div>
+          <p className="disclaimer-text">
+            {showIphoneNote ? SCREEN_DISCLAIMER :
+             showGoogleNote ? 'Original screen uses an OEM-matched panel — closest to factory quality. OLED uses a high-quality aftermarket panel at a lower price — still excellent clarity.' :
+             showIPadNote ? 'Screen only replaces the outer glass/digitiser — ideal if your LCD looks fine. Screen + LCD replaces the full display assembly — needed for dark spots, colour bleed, or lines.' : ''}
+          </p>
+        </div>
       </div>
     );
   }
