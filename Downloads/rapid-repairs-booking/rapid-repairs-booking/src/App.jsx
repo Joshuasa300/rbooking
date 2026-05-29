@@ -723,34 +723,20 @@ export default function App() {
   // ── Progress labels ────────────────────────────────────────────────────────
   function getProgressLabels() {
     const { device } = st;
-    if (device === 'macbook' || device === 'other_laptop') return ['Category', 'Device', 'Repair type', 'Quote'];
-    if (device === 'other_phone' || device === 'android_tab')
-      return ['Category', 'Device', 'Details'];
-    if (device === 'google') {
-      return isQuoteRepair() || st.step === 80
-        ? ['Category', 'Device', 'Model', 'Repair', 'Quote']
-        : ['Category', 'Device', 'Model', 'Repair', 'Time slot', 'Payment'];
-    }
-    if (device === 'ipad') {
-      return isQuoteRepair() || st.step === 80
-        ? ['Category', 'Device', 'Series', 'Model', 'Repair', 'Quote']
-        : ['Category', 'Device', 'Series', 'Model', 'Repair', 'Time slot', 'Payment'];
-    }
-    if (device === 'iphone' || device === 'samsung') {
-      return isQuoteRepair() || st.step === 80
-        ? ['Category', 'Device', 'Series', 'Model', 'Repair', 'Quote']
-        : ['Category', 'Device', 'Series', 'Model', 'Repair', 'Time slot', 'Payment'];
-    }
-    return ['Category', 'Device', 'Repair', 'Time slot', 'Payment'];
+    if (device === 'macbook' || device === 'other_laptop') return ['Device', 'Repair type', 'Quote'];
+    if (device === 'other_phone' || device === 'android_tab') return ['Device', 'Details'];
+    if (isQuoteRepair() || st.step === 80) return ['Device', 'Repair', 'Quote'];
+    return ['Device', 'Repair', 'Time slot', 'Payment'];
   }
 
   function getProgressStep() {
     const { device, step } = st;
     if (step === 80 || step >= 90) return getProgressLabels().length - 1;
-    if (device === 'macbook' || device === 'other_laptop') return Math.min(step - 1, 3);
-    if (device === 'other_phone' || device === 'android_tab') return Math.min(step, 2);
-    // step 0=cat 1=device 2=series 3=model 4=repair 5=time 6=pay
-    return step;
+    if (device === 'macbook' || device === 'other_laptop') return step <= 1 ? 0 : 1;
+    if (device === 'other_phone' || device === 'android_tab') return step <= 1 ? 0 : 1;
+    // internal: 0=cat 1=device 2=series 3=model 4=repair 5=time 6=pay → mapped to 4 display steps
+    if (step <= 3) return 0;
+    return step - 3; // 4→1 repair, 5→2 time slot, 6→3 payment
   }
 
   function nextFromRepair() {
