@@ -814,6 +814,7 @@ export default function App() {
           <Elements key={charge} stripe={stripePromise} options={{
             mode: 'payment', amount: charge * 100, currency: 'gbp',
             appearance: { theme: 'flat', variables: { fontFamily: 'inherit', borderRadius: '8px', colorPrimary: '#1a1a1a' } },
+            wallets: { applePay: 'auto', googlePay: 'auto' },
           }}>
             <StepPayment />
           </Elements>
