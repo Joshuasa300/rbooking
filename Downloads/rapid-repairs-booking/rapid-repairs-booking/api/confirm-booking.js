@@ -54,7 +54,9 @@ function customerEmailHTML(booking) {
   const balanceDue = repairCost - paidAmount;
   const payLine = payMode === 'deposit'
     ? `£${paidAmount} deposit paid — please bring £${balanceDue} on the day`
-    : `£${paidAmount} paid in full — nothing more to pay`;
+    : payMode === 'full'
+    ? `£${paidAmount} paid in full — nothing more to pay`
+    : `Pay on arrival — £${repairCost} to pay on the day`;
 
   return `<!DOCTYPE html>
 <html>
@@ -129,7 +131,9 @@ function shopEmailHTML(booking) {
   const balanceDue = repairCost - paidAmount;
   const payLine = payMode === 'deposit'
     ? `£${paidAmount} deposit — £${balanceDue} to collect`
-    : `£${paidAmount} paid in full`;
+    : payMode === 'full'
+    ? `£${paidAmount} paid in full`
+    : `Pay on arrival — £${repairCost} to collect`;
 
   return `<!DOCTYPE html>
 <html>
@@ -217,7 +221,7 @@ async function createCalendarEvent(booking) {
       ].join('\n'),
       start: { dateTime: startLocal, timeZone: 'Europe/London' },
       end:   { dateTime: endLocal,   timeZone: 'Europe/London' },
-      colorId: payMode === 'deposit' ? '5' : '2',
+      colorId: payMode === 'deposit' ? '5' : payMode === 'full' ? '2' : '7',
       reminders: {
         useDefault: false,
         overrides: [
@@ -246,7 +250,9 @@ async function processBooking({ ref, device, repair, repairCost, slotDate, slotT
     ``,
     payMode === 'deposit'
       ? `Deposit of £${paidAmount} received. Bring £${balanceDue} on the day.`
-      : `Fully paid - nothing more to pay.`,
+      : payMode === 'full'
+      ? `Fully paid - nothing more to pay.`
+      : `Pay on arrival — £${repairCost} to pay on the day.`,
     ``,
     `193 Summers Lane, Finchley N12 0LA`,
   ].join('\n');
@@ -256,7 +262,7 @@ async function processBooking({ ref, device, repair, repairCost, slotDate, slotT
     `${customer} | ${phone}`,
     `${device} - ${repair}`,
     `${slotDate} at ${slotTime}`,
-    payMode === 'deposit' ? `£${paidAmount} deposit, £${balanceDue} to collect` : `£${paidAmount} paid in full`,
+    payMode === 'deposit' ? `£${paidAmount} deposit, £${balanceDue} to collect` : payMode === 'full' ? `£${paidAmount} paid in full` : `Pay on arrival — £${repairCost} to collect`,
     `Ref: ${ref}`,
   ].join('\n');
 

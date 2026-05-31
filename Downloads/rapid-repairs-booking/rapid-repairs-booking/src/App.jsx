@@ -1,6 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { loadStripe } from '@stripe/stripe-js';
-import { Elements, PaymentElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import {
   DEPOSIT_AMOUNT, SCREEN_DISCLAIMER, DEPOSIT_POLICY,
   categories, devicesByCat,
@@ -11,7 +9,6 @@ import {
 } from './data';
 import './styles.css';
 
-const stripePromise = loadStripe(process.env.REACT_APP_STRIPE_PUBLISHABLE_KEY);
 
 // ── iPhone SVG silhouette (model-accurate: island / notch / home-button) ─────
 function IPhoneSVG({ size = 'std', top = 'island', svgHeight = 90 }) {
@@ -746,7 +743,7 @@ export default function App() {
     if (device === 'macbook' || device === 'other_laptop') return ['Device', 'Repair type', 'Quote'];
     if (device === 'other_phone' || device === 'android_tab') return ['Device', 'Details'];
     if (isQuoteRepair() || st.step === 80) return ['Device', 'Repair', 'Quote'];
-    return ['Device', 'Repair', 'Time slot', 'Payment'];
+    return ['Device', 'Repair', 'Time slot', 'Details'];
   }
 
   function getProgressStep() {
@@ -810,15 +807,7 @@ export default function App() {
         )}
         {st.step === 4 && <StepRepair />}
         {st.step === 5 && <StepTimeSlot />}
-        {st.step === 6 && (
-          <Elements key={charge} stripe={stripePromise} options={{
-            mode: 'payment', amount: charge * 100, currency: 'gbp',
-            appearance: { theme: 'flat', variables: { fontFamily: 'inherit', borderRadius: '8px', colorPrimary: '#1a1a1a' } },
-            wallets: { applePay: 'auto', googlePay: 'auto' },
-          }}>
-            <StepPayment />
-          </Elements>
-        )}
+        {st.step === 6 && <StepDetails />}
         {st.step === 80 && <StepQuoteForm />}
         {st.step === 90 && <StepDone />}
         {st.step === 91 && <StepQuoteDone />}
@@ -1165,111 +1154,60 @@ export default function App() {
     );
   }
 
-  function StepPayment() {
-    const stripe = useStripe();
-    const elements = useElements();
+  function StepDetails() {
     const [form, setForm] = useState(st.details);
-    const [payMode, setPayMode] = useState(st.payMode);
     const [loading, setLoading] = useState(false);
     const [errMsg, setErrMsg] = useState('');
-    const c = payMode === 'deposit' ? depositAmount : repairPrice;
     const valid = form.fname && form.lname && form.phone && form.email;
     const upd = (k, v) => { const u = { ...form, [k]: v }; setForm(u); };
-    const switchMode = (mode) => { setPayMode(mode); set({ payMode: mode }); };
 
-    const handlePay = async () => {
-      if (!stripe || !elements || !valid) return;
+    const handleConfirm = async () => {
+      if (!valid) return;
       setLoading(true);
       setErrMsg('');
       try {
-        const { error: submitErr } = await elements.submit();
-        if (submitErr) { setErrMsg(submitErr.message); setLoading(false); return; }
-
         const ref = 'RR-' + Math.floor(10000 + Math.random() * 90000);
-        const res = await fetch('/api/create-payment-intent', {
+        const res = await fetch('/api/confirm-booking', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            amount: c * 100,
-            metadata: {
-              ref,
-              device:     st.model || st.ipadMod || st.device,
-              repair:     getSelectedRepairs().map(r => r.name).join(', '),
-              repairTime: getLongestRepairTime(),
-              slotDate:   SLOTS[st.dayIdx].label,
-              slotTime:   st.slot,
-              repairCost: String(repairPrice),
-              payMode,
-              customer:   `${form.fname} ${form.lname}`,
-              phone:      form.phone,
-              email:      form.email,
-            },
+            ref,
+            device:     st.model || st.ipadMod || st.device,
+            repair:     getSelectedRepairs().map(r => r.name).join(', '),
+            repairTime: getLongestRepairTime(),
+            slotDate:   SLOTS[st.dayIdx].label,
+            slotTime:   st.slot,
+            repairCost: repairPrice,
+            payMode:    'on-arrival',
+            paidAmount: 0,
+            customer:   `${form.fname} ${form.lname}`,
+            phone:      form.phone,
+            email:      form.email,
           }),
         });
-        const { clientSecret, error: apiErr } = await res.json();
-        if (apiErr) throw new Error(apiErr);
-
-        const { error: payErr } = await stripe.confirmPayment({
-          elements,
-          clientSecret,
-          confirmParams: { return_url: window.location.href },
-          redirect: 'if_required',
-        });
-        if (payErr) throw new Error(payErr.message);
-        set({ step: 90, paidAmount: c, bookingRef: ref });
+        const data = await res.json();
+        if (!data.success) throw new Error(data.error || 'Booking failed');
+        set({ step: 90, bookingRef: ref, details: form });
       } catch (err) {
-        setErrMsg(err.message || 'Payment failed. Please try again.');
+        setErrMsg(err.message || 'Something went wrong. Please try again.');
         setLoading(false);
       }
     };
 
     return (
       <div className="step-panel">
-        <p className="section-title">Your details & payment</p>
-        <p className="section-sub">Card details handled securely by Stripe.</p>
-        {((['samsung', 'google', 'ipad'].includes(st.device) && getSelectedRepairs().some(r => /screen|battery/i.test(r?.name || ''))) ||
-          (st.device === 'iphone' && getSelectedRepairs().some(r => r?.name === 'Screen – Premium'))) && (
-          <p style={{ color: '#cc0000', fontSize: 13, margin: '0 0 12px', lineHeight: 1.4 }}>
-            Part may take 1–3 business days to be ordered
-          </p>
-        )}
-        <div className="pay-toggle">
-          <button className={`pay-option ${payMode === 'deposit' ? 'selected' : ''}`} onClick={() => switchMode('deposit')}>
-            <div className="pay-option-label">Pay deposit</div>
-            <div className="pay-option-amount">£{depositAmount}</div>
-            <div className="pay-option-sub">Balance on collection</div>
-          </button>
-          <button className={`pay-option ${payMode === 'full' ? 'selected' : ''}`} onClick={() => switchMode('full')}>
-            <div className="pay-option-label">Pay in full</div>
-            <div className="pay-option-amount">£{repairPrice}</div>
-            <div className="pay-option-sub">Nothing more to pay</div>
-          </button>
-        </div>
-        <div className="deposit-note">
-          <i className="ti ti-info-circle" aria-hidden="true" style={{ fontSize: 14, flexShrink: 0, marginTop: 1 }} />
-          <span>{DEPOSIT_POLICY}</span>
-        </div>
+        <p className="section-title">Your details</p>
+        <p className="section-sub">We'll send your booking confirmation by SMS and email.</p>
         <div className="form-row">
           <div className="form-group"><label className="form-label">First name</label><input type="text" placeholder="Joshua" value={form.fname} onChange={e => upd('fname', e.target.value)} /></div>
           <div className="form-group"><label className="form-label">Last name</label><input type="text" placeholder="Smith" value={form.lname} onChange={e => upd('lname', e.target.value)} /></div>
         </div>
         <div className="form-group"><label className="form-label">Phone</label><input type="tel" placeholder="07700 900 000" value={form.phone} onChange={e => upd('phone', e.target.value)} /></div>
         <div className="form-group"><label className="form-label">Email</label><input type="email" placeholder="you@email.com" value={form.email} onChange={e => upd('email', e.target.value)} /></div>
-        <div className="stripe-box">
-          <label className="form-label" style={{ marginBottom: 10, display: 'block' }}>Card details</label>
-          <PaymentElement />
-        </div>
-        <div className="pay-summary">
-          <span>Paying now</span>
-          <span className="pay-summary-amount">£{c}</span>
-        </div>
         {errMsg && <div className="error-msg">{errMsg}</div>}
-        <div className="btn-row">
-          <button className="btn-primary btn-pay" onClick={handlePay} disabled={loading || !valid || !stripe}>
-            {loading ? 'Processing…' : `Pay £${c} securely`} <i className="ti ti-lock" aria-hidden="true" />
-          </button>
-        </div>
-        <p className="stripe-note"><i className="ti ti-shield-check" aria-hidden="true" /> Secured by Stripe · PCI DSS compliant</p>
+        <button className="btn-primary" style={{ width: '100%', marginTop: 8 }} onClick={handleConfirm} disabled={loading || !valid}>
+          {loading ? 'Confirming…' : 'Confirm booking'} {!loading && <i className="ti ti-arrow-right" aria-hidden="true" />}
+        </button>
       </div>
     );
   }
@@ -1376,7 +1314,7 @@ export default function App() {
           <div className="confirm-row"><span className="confirm-label">Repair</span><span className="confirm-val">{r?.name}</span></div>
           <div className="confirm-row"><span className="confirm-label">Repair cost</span><span className="confirm-val">£{repairPrice}</span></div>
           <div className="confirm-row"><span className="confirm-label">Slot</span><span className="confirm-val">{slot?.label} at {st.slot}</span></div>
-          <div className="confirm-row"><span className="confirm-label">{st.payMode === 'deposit' ? 'Deposit paid' : 'Paid in full'}</span><span className="confirm-val">£{st.paidAmount}</span></div>
+          <div className="confirm-row"><span className="confirm-label">Payment</span><span className="confirm-val">Pay on arrival</span></div>
         </div>
         <p className="success-sub">You'll receive a confirmation via SMS and email.<br /><br /><i className="ti ti-map-pin" aria-hidden="true" /> 193 Summers Lane, N12 0LA<br />Open 7 days · 24 hours</p>
       </div>
