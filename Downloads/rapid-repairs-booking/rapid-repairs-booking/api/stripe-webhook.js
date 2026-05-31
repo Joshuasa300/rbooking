@@ -9,7 +9,7 @@
 //   Events to listen: payment_intent.succeeded
 
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
-const processBooking = require('./confirm-booking');
+const { processBooking } = require('./confirm-booking');
 
 async function getRawBody(req) {
   return new Promise((resolve, reject) => {

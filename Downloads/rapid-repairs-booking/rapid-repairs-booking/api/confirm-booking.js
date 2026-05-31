@@ -285,10 +285,8 @@ async function processBooking({ ref, device, repair, repairCost, slotDate, slotT
   ]);
 }
 
-module.exports = processBooking;
-
-// ── HTTP handler (kept for manual/admin use) ───────────────────────────────
-module.exports.handler = async (req, res) => {
+// ── HTTP handler — default export so Vercel can serve /api/confirm-booking ──
+module.exports = async (req, res) => {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
   try {
     await processBooking(req.body);
@@ -298,3 +296,6 @@ module.exports.handler = async (req, res) => {
     res.status(200).json({ success: false, error: error.message });
   }
 };
+
+// Named export for stripe-webhook.js which requires processBooking directly
+module.exports.processBooking = processBooking;
