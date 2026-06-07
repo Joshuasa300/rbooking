@@ -591,6 +591,161 @@ const PIXEL_MODELS = [
   { name: 'Pixel 2',        gen: 2, svgId: 'px2'      },
 ];
 
+// ── Form step components (defined outside App so identity is stable on re-render) ─
+function StepDetails({ st, set, go, slots, repairPrice, repairsList, longestTime }) {
+  const [form, setForm] = useState(st.details);
+  const [loading, setLoading] = useState(false);
+  const [errMsg, setErrMsg] = useState('');
+  const valid = form.fname && form.lname && form.phone && form.email;
+  const upd = (k, v) => { const u = { ...form, [k]: v }; setForm(u); };
+
+  const handleConfirm = async () => {
+    if (!valid) return;
+    setLoading(true);
+    setErrMsg('');
+    try {
+      const ref = 'RR-' + Math.floor(10000 + Math.random() * 90000);
+      const res = await fetch('/api/confirm-booking', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ref,
+          device:     st.model || st.ipadMod || st.device,
+          repair:     repairsList.map(r => r.name).join(', '),
+          repairTime: longestTime,
+          slotDate:   slots[st.dayIdx].label,
+          slotTime:   st.slot,
+          repairCost: repairPrice,
+          payMode:    'on-arrival',
+          paidAmount: 0,
+          customer:   `${form.fname} ${form.lname}`,
+          phone:      form.phone,
+          email:      form.email,
+        }),
+      });
+      const data = await res.json();
+      if (!data.success) throw new Error(data.error || 'Booking failed');
+      set({ step: 90, bookingRef: ref, details: form });
+    } catch (err) {
+      setErrMsg(err.message || 'Something went wrong. Please try again.');
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="step-panel">
+      <p className="section-title">Your details</p>
+      <p className="section-sub">We'll send your booking confirmation by SMS and email.</p>
+      <div className="form-row">
+        <div className="form-group"><label className="form-label">First name</label><input type="text" placeholder="Joshua" value={form.fname} onChange={e => upd('fname', e.target.value)} /></div>
+        <div className="form-group"><label className="form-label">Last name</label><input type="text" placeholder="Smith" value={form.lname} onChange={e => upd('lname', e.target.value)} /></div>
+      </div>
+      <div className="form-group"><label className="form-label">Phone</label><input type="tel" placeholder="07700 900 000" value={form.phone} onChange={e => upd('phone', e.target.value)} /></div>
+      <div className="form-group"><label className="form-label">Email</label><input type="email" placeholder="you@email.com" value={form.email} onChange={e => upd('email', e.target.value)} /></div>
+      {errMsg && <div className="error-msg">{errMsg}</div>}
+      <button className="btn-primary" style={{ width: '100%', marginTop: 8 }} onClick={handleConfirm} disabled={loading || !valid}>
+        {loading ? 'Confirming…' : 'Confirm booking'} {!loading && <i className="ti ti-arrow-right" aria-hidden="true" />}
+      </button>
+    </div>
+  );
+}
+
+function StepQuoteForm({ st, set, go }) {
+  const isMB = st.device === 'macbook';
+  const isLT = st.device === 'other_laptop';
+  const isLaptop = isMB || isLT;
+  const mbCard = MB_CARDS.find(c => c.id === st.mbCard);
+  const ltCard = LT_CARDS.find(c => c.id === st.ltCard);
+  const laptopCard = isMB ? mbCard : ltCard;
+  const repairs = (() => {
+    const { device, model, ipadMod } = st;
+    if (device === 'iphone' || device === 'samsung') return modelRepairs[model] || [];
+    if (device === 'ipad') return IPAD_REPAIRS[ipadMod] || [];
+    if (device === 'google') return pixelRepairs[model] || genericRepairs.google || [];
+    return genericRepairs[device] || [];
+  })();
+  const r = (st.repairIdxs || []).map(i => repairs[i]).filter(Boolean)[0] || null;
+  const repairLabel = isLaptop ? (laptopCard?.name || 'a repair') : (r?.name || 'a repair');
+  const deviceLabel = isMB ? 'MacBook Air / Pro' : isLT ? 'your laptop' : (st.model || st.ipadMod || 'your device');
+  const isMB_repair = isMB ? st.mbCard === 'motherboard' : isLT ? st.ltCard === 'motherboard' : false;
+  const [form, setForm] = useState(st.quoteForm);
+  const valid = form.fname && form.lname && form.phone && form.email && form.issue;
+  const upd = (k, v) => { const u = { ...form, [k]: v }; setForm(u); set({ quoteForm: u }); };
+  const phs = { screen: isLT ? 'e.g. Screen cracked, backlight issues, touch not working…' : 'e.g. Screen cracked, backlight issues, dead pixels…', battery: "e.g. Battery drains fast, won't charge, swollen battery…", motherboard: "e.g. Won't turn on after liquid damage, no power…", other: 'e.g. Keyboard not working, fan loud, charging port loose…' };
+  const cardId = isMB ? st.mbCard : st.ltCard;
+  const ph = isLaptop ? (phs[cardId] || 'Describe the issue…') : "e.g. Won't turn on, cracked screen, water damage…";
+  const bannerSub = isMB_repair
+    ? `You selected <strong>${repairLabel}</strong> for your <strong>${deviceLabel}</strong>. Please note this repair typically takes <strong>4–7 days</strong>.`
+    : `You selected <strong>${repairLabel}</strong> for your <strong>${deviceLabel}</strong>. Describe your issue and we'll send a price right away.`;
+
+  return (
+    <div className="step-panel">
+      <p className="section-title">Get a free quote</p>
+      <p className="section-sub">We'll get back to you within 20 minutes.</p>
+      <div className="quote-banner">
+        <i className="ti ti-message-circle" aria-hidden="true" style={{ fontSize: 20, flexShrink: 0, marginTop: 1, color: 'var(--color-text-secondary)' }} />
+        <div>
+          <div className="quote-banner-title">No commitment — free quote</div>
+          <div className="quote-banner-sub" dangerouslySetInnerHTML={{ __html: bannerSub }} />
+        </div>
+      </div>
+      <div className="form-row">
+        <div className="form-group"><label className="form-label">First name</label><input type="text" placeholder="Joshua" value={form.fname} onChange={e => upd('fname', e.target.value)} /></div>
+        <div className="form-group"><label className="form-label">Last name</label><input type="text" placeholder="Smith" value={form.lname} onChange={e => upd('lname', e.target.value)} /></div>
+      </div>
+      <div className="form-group"><label className="form-label">Phone</label><input type="tel" placeholder="07700 900 000" value={form.phone} onChange={e => upd('phone', e.target.value)} /></div>
+      <div className="form-group"><label className="form-label">Email</label><input type="email" placeholder="you@email.com" value={form.email} onChange={e => upd('email', e.target.value)} /></div>
+      <div className="form-group">
+        <label className="form-label">Describe the issue</label>
+        <textarea placeholder={ph} value={form.issue} onChange={e => upd('issue', e.target.value)} rows={3} />
+      </div>
+      <div className="btn-row">
+        <button className="btn-primary" onClick={() => { set({ bookingRef: 'RR-Q-' + Math.floor(10000 + Math.random() * 90000) }); go(91); }} disabled={!valid}>
+          Send quote request <i className="ti ti-send" aria-hidden="true" />
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function StepOtherForm({ st, set, go }) {
+  const titles = { other_phone: 'Other smartphone', android_tab: 'Android tablet', macbook: 'MacBook', other_laptop: 'Other laptop' };
+  const subs   = { other_phone: 'We repair Sony, OnePlus, Motorola, Huawei, Nokia and more.', android_tab: 'We repair Samsung, Lenovo, Huawei tablets and more.', other_laptop: 'HP, Asus, Lenovo, Dell, Chromebook and more.' };
+  const [form, setForm] = useState(st.otherForm);
+  const valid = form.fname && form.lname && form.phone && form.email && form.issue;
+  const upd = (k, v) => { const u = { ...form, [k]: v }; setForm(u); set({ otherForm: u }); };
+  return (
+    <div className="step-panel">
+      <p className="section-title">{titles[st.device] || 'Get a quote'}</p>
+      <p className="section-sub">Tell us about your device — we'll reply within 20 minutes with a price.</p>
+      <div className="quote-banner">
+        <i className="ti ti-message-circle" aria-hidden="true" style={{ fontSize: 20, flexShrink: 0, marginTop: 1, color: 'var(--color-text-secondary)' }} />
+        <div>
+          <div className="quote-banner-title">Free quote — no commitment</div>
+          <div className="quote-banner-sub">{subs[st.device] || ''}</div>
+        </div>
+      </div>
+      <div className="form-row">
+        <div className="form-group"><label className="form-label">First name</label><input type="text" placeholder="Joshua" value={form.fname} onChange={e => upd('fname', e.target.value)} /></div>
+        <div className="form-group"><label className="form-label">Last name</label><input type="text" placeholder="Smith" value={form.lname} onChange={e => upd('lname', e.target.value)} /></div>
+      </div>
+      <div className="form-group"><label className="form-label">Phone</label><input type="tel" placeholder="07700 900 000" value={form.phone} onChange={e => upd('phone', e.target.value)} /></div>
+      <div className="form-group"><label className="form-label">Email</label><input type="email" placeholder="you@email.com" value={form.email} onChange={e => upd('email', e.target.value)} /></div>
+      <div className="form-group">
+        <label className="form-label">Brand & model <span style={{ color: 'var(--color-text-tertiary)', fontSize: 12 }}>(optional)</span></label>
+        <input type="text" placeholder="e.g. Sony Xperia 1 V" value={form.brand} onChange={e => upd('brand', e.target.value)} />
+      </div>
+      <div className="form-group">
+        <label className="form-label">Describe the issue</label>
+        <textarea placeholder="e.g. Cracked screen, won't charge, water damage…" value={form.issue} onChange={e => upd('issue', e.target.value)} rows={3} />
+      </div>
+      <div className="btn-row">
+        <button className="btn-primary" onClick={() => go(92)} disabled={!valid}>Send enquiry <i className="ti ti-send" aria-hidden="true" /></button>
+      </div>
+    </div>
+  );
+}
+
 // ── Main App ──────────────────────────────────────────────────────────────────
 export default function App() {
   const [SLOTS, setSlots] = useState(() => getAvailableSlots());
@@ -800,15 +955,15 @@ export default function App() {
           st.device === 'ipad'        ? <StepIPadSeries /> :
           st.device === 'macbook'     ? <StepMacBookCards /> :
           st.device === 'other_laptop'? <StepOtherLaptopCards /> :
-                                        <StepOtherForm />
+                                        <StepOtherForm st={st} set={set} go={go} />
         )}
         {st.step === 3 && (
           st.device === 'ipad' ? <StepIPadModel /> : <StepModelGrid />
         )}
         {st.step === 4 && <StepRepair />}
         {st.step === 5 && <StepTimeSlot />}
-        {st.step === 6 && <StepDetails />}
-        {st.step === 80 && <StepQuoteForm />}
+        {st.step === 6 && <StepDetails st={st} set={set} go={go} slots={SLOTS} repairPrice={repairPrice} repairsList={getSelectedRepairs()} longestTime={getLongestRepairTime()} />}
+        {st.step === 80 && <StepQuoteForm st={st} set={set} go={go} />}
         {st.step === 90 && <StepDone />}
         {st.step === 91 && <StepQuoteDone />}
         {st.step === 92 && <StepOtherDone />}
@@ -1154,153 +1309,9 @@ export default function App() {
     );
   }
 
-  function StepDetails() {
-    const [form, setForm] = useState(st.details);
-    const [loading, setLoading] = useState(false);
-    const [errMsg, setErrMsg] = useState('');
-    const valid = form.fname && form.lname && form.phone && form.email;
-    const upd = (k, v) => { const u = { ...form, [k]: v }; setForm(u); };
-
-    const handleConfirm = async () => {
-      if (!valid) return;
-      setLoading(true);
-      setErrMsg('');
-      try {
-        const ref = 'RR-' + Math.floor(10000 + Math.random() * 90000);
-        const res = await fetch('/api/confirm-booking', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            ref,
-            device:     st.model || st.ipadMod || st.device,
-            repair:     getSelectedRepairs().map(r => r.name).join(', '),
-            repairTime: getLongestRepairTime(),
-            slotDate:   SLOTS[st.dayIdx].label,
-            slotTime:   st.slot,
-            repairCost: repairPrice,
-            payMode:    'on-arrival',
-            paidAmount: 0,
-            customer:   `${form.fname} ${form.lname}`,
-            phone:      form.phone,
-            email:      form.email,
-          }),
-        });
-        const data = await res.json();
-        if (!data.success) throw new Error(data.error || 'Booking failed');
-        set({ step: 90, bookingRef: ref, details: form });
-      } catch (err) {
-        setErrMsg(err.message || 'Something went wrong. Please try again.');
-        setLoading(false);
-      }
-    };
-
-    return (
-      <div className="step-panel">
-        <p className="section-title">Your details</p>
-        <p className="section-sub">We'll send your booking confirmation by SMS and email.</p>
-        <div className="form-row">
-          <div className="form-group"><label className="form-label">First name</label><input type="text" placeholder="Joshua" value={form.fname} onChange={e => upd('fname', e.target.value)} /></div>
-          <div className="form-group"><label className="form-label">Last name</label><input type="text" placeholder="Smith" value={form.lname} onChange={e => upd('lname', e.target.value)} /></div>
-        </div>
-        <div className="form-group"><label className="form-label">Phone</label><input type="tel" placeholder="07700 900 000" value={form.phone} onChange={e => upd('phone', e.target.value)} /></div>
-        <div className="form-group"><label className="form-label">Email</label><input type="email" placeholder="you@email.com" value={form.email} onChange={e => upd('email', e.target.value)} /></div>
-        {errMsg && <div className="error-msg">{errMsg}</div>}
-        <button className="btn-primary" style={{ width: '100%', marginTop: 8 }} onClick={handleConfirm} disabled={loading || !valid}>
-          {loading ? 'Confirming…' : 'Confirm booking'} {!loading && <i className="ti ti-arrow-right" aria-hidden="true" />}
-        </button>
-      </div>
-    );
-  }
-
-  function StepQuoteForm() {
-    const isMB = st.device === 'macbook';
-    const isLT = st.device === 'other_laptop';
-    const isLaptop = isMB || isLT;
-    const mbCard = MB_CARDS.find(c => c.id === st.mbCard);
-    const ltCard = LT_CARDS.find(c => c.id === st.ltCard);
-    const laptopCard = isMB ? mbCard : ltCard;
-    const r = getSelectedRepair();
-    const repairLabel = isLaptop ? (laptopCard?.name || 'a repair') : (r?.name || 'a repair');
-    const deviceLabel = isMB ? 'MacBook Air / Pro' : isLT ? 'your laptop' : (st.model || st.ipadMod || 'your device');
-    const isMB_repair = isMotherboardRepair();
-    const [form, setForm] = useState(st.quoteForm);
-    const valid = form.fname && form.lname && form.phone && form.email && form.issue;
-    const upd = (k, v) => { const u = { ...form, [k]: v }; setForm(u); set({ quoteForm: u }); };
-    const phs = { screen: isLT ? 'e.g. Screen cracked, backlight issues, touch not working…' : 'e.g. Screen cracked, backlight issues, dead pixels…', battery: "e.g. Battery drains fast, won't charge, swollen battery…", motherboard: "e.g. Won't turn on after liquid damage, no power…", other: 'e.g. Keyboard not working, fan loud, charging port loose…' };
-    const cardId = isMB ? st.mbCard : st.ltCard;
-    const ph = isLaptop ? (phs[cardId] || 'Describe the issue…') : "e.g. Won't turn on, cracked screen, water damage…";
-    const bannerSub = isMB_repair
-      ? `You selected <strong>${repairLabel}</strong> for your <strong>${deviceLabel}</strong>. Please note this repair typically takes <strong>4–7 days</strong>.`
-      : `You selected <strong>${repairLabel}</strong> for your <strong>${deviceLabel}</strong>. Describe your issue and we'll send a price right away.`;
-    const backStep = isLaptop ? 2 : 4;
-
-    return (
-      <div className="step-panel">
-        <p className="section-title">Get a free quote</p>
-        <p className="section-sub">We'll get back to you within 20 minutes.</p>
-        <div className="quote-banner">
-          <i className="ti ti-message-circle" aria-hidden="true" style={{ fontSize: 20, flexShrink: 0, marginTop: 1, color: 'var(--color-text-secondary)' }} />
-          <div>
-            <div className="quote-banner-title">No commitment — free quote</div>
-            <div className="quote-banner-sub" dangerouslySetInnerHTML={{ __html: bannerSub }} />
-          </div>
-        </div>
-        <div className="form-row">
-          <div className="form-group"><label className="form-label">First name</label><input type="text" placeholder="Joshua" value={form.fname} onChange={e => upd('fname', e.target.value)} /></div>
-          <div className="form-group"><label className="form-label">Last name</label><input type="text" placeholder="Smith" value={form.lname} onChange={e => upd('lname', e.target.value)} /></div>
-        </div>
-        <div className="form-group"><label className="form-label">Phone</label><input type="tel" placeholder="07700 900 000" value={form.phone} onChange={e => upd('phone', e.target.value)} /></div>
-        <div className="form-group"><label className="form-label">Email</label><input type="email" placeholder="you@email.com" value={form.email} onChange={e => upd('email', e.target.value)} /></div>
-        <div className="form-group">
-          <label className="form-label">Describe the issue</label>
-          <textarea placeholder={ph} value={form.issue} onChange={e => upd('issue', e.target.value)} rows={3} />
-        </div>
-        <div className="btn-row">
-          <button className="btn-primary" onClick={() => { set({ bookingRef: 'RR-Q-' + Math.floor(10000 + Math.random() * 90000) }); go(91); }} disabled={!valid}>
-            Send quote request <i className="ti ti-send" aria-hidden="true" />
-          </button>
-        </div>
-      </div>
-    );
-  }
-
-  function StepOtherForm() {
-    const titles = { other_phone: 'Other smartphone', android_tab: 'Android tablet', macbook: 'MacBook', other_laptop: 'Other laptop' };
-    const subs   = { other_phone: 'We repair Sony, OnePlus, Motorola, Huawei, Nokia and more.', android_tab: 'We repair Samsung, Lenovo, Huawei tablets and more.', other_laptop: 'HP, Asus, Lenovo, Dell, Chromebook and more.' };
-    const [form, setForm] = useState(st.otherForm);
-    const valid = form.fname && form.lname && form.phone && form.email && form.issue;
-    const upd = (k, v) => { const u = { ...form, [k]: v }; setForm(u); set({ otherForm: u }); };
-    return (
-      <div className="step-panel">
-        <p className="section-title">{titles[st.device] || 'Get a quote'}</p>
-        <p className="section-sub">Tell us about your device — we'll reply within 20 minutes with a price.</p>
-        <div className="quote-banner">
-          <i className="ti ti-message-circle" aria-hidden="true" style={{ fontSize: 20, flexShrink: 0, marginTop: 1, color: 'var(--color-text-secondary)' }} />
-          <div>
-            <div className="quote-banner-title">Free quote — no commitment</div>
-            <div className="quote-banner-sub">{subs[st.device] || ''}</div>
-          </div>
-        </div>
-        <div className="form-row">
-          <div className="form-group"><label className="form-label">First name</label><input type="text" placeholder="Joshua" value={form.fname} onChange={e => upd('fname', e.target.value)} /></div>
-          <div className="form-group"><label className="form-label">Last name</label><input type="text" placeholder="Smith" value={form.lname} onChange={e => upd('lname', e.target.value)} /></div>
-        </div>
-        <div className="form-group"><label className="form-label">Phone</label><input type="tel" placeholder="07700 900 000" value={form.phone} onChange={e => upd('phone', e.target.value)} /></div>
-        <div className="form-group"><label className="form-label">Email</label><input type="email" placeholder="you@email.com" value={form.email} onChange={e => upd('email', e.target.value)} /></div>
-        <div className="form-group">
-          <label className="form-label">Brand & model <span style={{ color: 'var(--color-text-tertiary)', fontSize: 12 }}>(optional)</span></label>
-          <input type="text" placeholder="e.g. Sony Xperia 1 V" value={form.brand} onChange={e => upd('brand', e.target.value)} />
-        </div>
-        <div className="form-group">
-          <label className="form-label">Describe the issue</label>
-          <textarea placeholder="e.g. Cracked screen, won't charge, water damage…" value={form.issue} onChange={e => upd('issue', e.target.value)} rows={3} />
-        </div>
-        <div className="btn-row">
-          <button className="btn-primary" onClick={() => go(92)} disabled={!valid}>Send enquiry <i className="ti ti-send" aria-hidden="true" /></button>
-        </div>
-      </div>
-    );
-  }
+  // StepDetails, StepQuoteForm, StepOtherForm are defined outside App (see below)
+  // so React keeps a stable component identity across re-renders and doesn't
+  // unmount them on every keystroke (which would close the mobile keyboard).
 
   function StepDone() {
     const r = getSelectedRepair();
