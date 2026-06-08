@@ -669,6 +669,7 @@ function StepQuoteForm({ st, set, go }) {
   const deviceLabel = isMB ? 'MacBook Air / Pro' : isLT ? 'your laptop' : (st.model || st.ipadMod || 'your device');
   const isMB_repair = isMB ? st.mbCard === 'motherboard' : isLT ? st.ltCard === 'motherboard' : false;
   const [form, setForm] = useState(st.quoteForm);
+  const [sending, setSending] = useState(false);
   const valid = form.fname && form.lname && form.phone && form.email && form.issue;
   const upd = (k, v) => { const u = { ...form, [k]: v }; setForm(u); set({ quoteForm: u }); };
   const phs = { screen: isLT ? 'e.g. Screen cracked, backlight issues, touch not working…' : 'e.g. Screen cracked, backlight issues, dead pixels…', battery: "e.g. Battery drains fast, won't charge, swollen battery…", motherboard: "e.g. Won't turn on after liquid damage, no power…", other: 'e.g. Keyboard not working, fan loud, charging port loose…' };
@@ -677,6 +678,27 @@ function StepQuoteForm({ st, set, go }) {
   const bannerSub = isMB_repair
     ? `You selected <strong>${repairLabel}</strong> for your <strong>${deviceLabel}</strong>. Please note this repair typically takes <strong>4–7 days</strong>.`
     : `You selected <strong>${repairLabel}</strong> for your <strong>${deviceLabel}</strong>. Describe your issue and we'll send a price right away.`;
+
+  const handleSend = async () => {
+    if (!valid || sending) return;
+    setSending(true);
+    const ref = 'RR-Q-' + Math.floor(10000 + Math.random() * 90000);
+    await fetch('/api/send-enquiry', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        ref,
+        customer: `${form.fname} ${form.lname}`,
+        phone: form.phone,
+        email: form.email,
+        device: deviceLabel,
+        repairType: repairLabel,
+        issue: form.issue,
+      }),
+    }).catch(e => console.error('send-enquiry failed:', e));
+    set({ bookingRef: ref });
+    go(91);
+  };
 
   return (
     <div className="step-panel">
@@ -700,8 +722,8 @@ function StepQuoteForm({ st, set, go }) {
         <textarea placeholder={ph} value={form.issue} onChange={e => upd('issue', e.target.value)} rows={3} />
       </div>
       <div className="btn-row">
-        <button className="btn-primary" onClick={() => { set({ bookingRef: 'RR-Q-' + Math.floor(10000 + Math.random() * 90000) }); go(91); }} disabled={!valid}>
-          Send quote request <i className="ti ti-send" aria-hidden="true" />
+        <button className="btn-primary" onClick={handleSend} disabled={!valid || sending}>
+          {sending ? 'Sending…' : 'Send quote request'} {!sending && <i className="ti ti-send" aria-hidden="true" />}
         </button>
       </div>
     </div>
@@ -712,8 +734,33 @@ function StepOtherForm({ st, set, go }) {
   const titles = { other_phone: 'Other smartphone', android_tab: 'Android tablet', macbook: 'MacBook', other_laptop: 'Other laptop' };
   const subs   = { other_phone: 'We repair Sony, OnePlus, Motorola, Huawei, Nokia and more.', android_tab: 'We repair Samsung, Lenovo, Huawei tablets and more.', other_laptop: 'HP, Asus, Lenovo, Dell, Chromebook and more.' };
   const [form, setForm] = useState(st.otherForm);
+  const [sending, setSending] = useState(false);
   const valid = form.fname && form.lname && form.phone && form.email && form.issue;
   const upd = (k, v) => { const u = { ...form, [k]: v }; setForm(u); set({ otherForm: u }); };
+
+  const deviceLabels = { other_phone: 'Other smartphone', android_tab: 'Android tablet', macbook: 'MacBook', other_laptop: 'Other laptop' };
+
+  const handleSend = async () => {
+    if (!valid || sending) return;
+    setSending(true);
+    const ref = 'RR-E-' + Math.floor(10000 + Math.random() * 90000);
+    await fetch('/api/send-enquiry', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        ref,
+        customer: `${form.fname} ${form.lname}`,
+        phone: form.phone,
+        email: form.email,
+        device: deviceLabels[st.device] || st.device,
+        brand: form.brand || '',
+        issue: form.issue,
+      }),
+    }).catch(e => console.error('send-enquiry failed:', e));
+    set({ bookingRef: ref });
+    go(92);
+  };
+
   return (
     <div className="step-panel">
       <p className="section-title">{titles[st.device] || 'Get a quote'}</p>
@@ -740,7 +787,9 @@ function StepOtherForm({ st, set, go }) {
         <textarea placeholder="e.g. Cracked screen, won't charge, water damage…" value={form.issue} onChange={e => upd('issue', e.target.value)} rows={3} />
       </div>
       <div className="btn-row">
-        <button className="btn-primary" onClick={() => go(92)} disabled={!valid}>Send enquiry <i className="ti ti-send" aria-hidden="true" /></button>
+        <button className="btn-primary" onClick={handleSend} disabled={!valid || sending}>
+          {sending ? 'Sending…' : 'Send enquiry'} {!sending && <i className="ti ti-send" aria-hidden="true" />}
+        </button>
       </div>
     </div>
   );
