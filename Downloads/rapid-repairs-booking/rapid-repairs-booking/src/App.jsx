@@ -838,6 +838,7 @@ export default function App() {
     window.scrollTo(0, 0);
     document.documentElement.scrollTop = 0;
     document.body.scrollTop = 0;
+    try { window.top.postMessage({ type: 'scrollToTop' }, '*'); } catch (_) {}
     try { window.parent.postMessage({ type: 'scrollToTop' }, '*'); } catch (_) {}
   }, [st.step]);
 
@@ -1253,7 +1254,7 @@ export default function App() {
         // Wait one frame so React has painted the Continue button before measuring
         const raf = requestAnimationFrame(() => {
           const h = document.body.scrollHeight;
-          // Tell the parent page to scroll so the bottom of the iframe is visible
+          try { window.top.postMessage({ type: 'scrollToBottom', height: h }, '*'); } catch (_) {}
           try { window.parent.postMessage({ type: 'scrollToBottom', height: h }, '*'); } catch (_) {}
         });
         return () => cancelAnimationFrame(raf);
