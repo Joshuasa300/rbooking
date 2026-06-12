@@ -1249,8 +1249,8 @@ export default function App() {
     const continueRef = React.useRef(null);
 
     React.useEffect(() => {
-      if (sel.length > 0 && continueRef.current) {
-        continueRef.current.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      if (sel.length > 0) {
+        window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
       }
     }, [sel.length]);
 
