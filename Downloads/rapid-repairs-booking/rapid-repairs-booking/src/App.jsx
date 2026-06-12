@@ -1267,7 +1267,7 @@ export default function App() {
       <div className="step-panel">
         <p className="section-title">{st.model || st.ipadMod}</p>
         <p className="section-sub">Select one or more repairs. All prices include parts and labour.</p>
-        <div className="warranty-pill"><span className="pill-dot" /> 90-day warranty · No fix, no fee</div>
+        <div className="warranty-pill"><span className="pill-dot" /> <strong>Scroll down to see all repairs</strong></div>
         <div className="repair-list">
           {repairs.map((r, i) => {
             const isQ = r.quote && !r.price;
