@@ -1250,7 +1250,13 @@ export default function App() {
 
     React.useEffect(() => {
       if (sel.length > 0) {
-        window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+        // Wait one frame so React has painted the Continue button before measuring
+        const raf = requestAnimationFrame(() => {
+          const h = document.body.scrollHeight;
+          // Tell the parent page to scroll so the bottom of the iframe is visible
+          try { window.parent.postMessage({ type: 'scrollToBottom', height: h }, '*'); } catch (_) {}
+        });
+        return () => cancelAnimationFrame(raf);
       }
     }, [sel.length]);
 
