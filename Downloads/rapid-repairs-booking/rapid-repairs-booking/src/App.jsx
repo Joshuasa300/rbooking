@@ -974,14 +974,6 @@ export default function App() {
   return (
     <div className="app">
       <PixelDefs />
-      <div className="app-header">
-        <div className="logo-mark">RR</div>
-        <div>
-          <div className="logo-name">Rapid Repairs</div>
-          <div className="logo-sub">Finchley · N12</div>
-        </div>
-      </div>
-
       {!isDone && st.step !== 91 && st.step !== 92 && (
         <>
           {getBackStep() !== null && (
@@ -993,6 +985,18 @@ export default function App() {
           )}
           <ProgressBar labels={labels} current={current} />
         </>
+      )}
+
+      {st.step === 4 && st.repairIdxs.length > 0 && (
+        <div style={{ borderTop: '1px solid var(--border)', borderBottom: '1px solid var(--border)', padding: '10px 0 12px', marginBottom: 8 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8, fontSize: 14, color: 'var(--color-text-secondary)' }}>
+            <span>{st.repairIdxs.length} repair{st.repairIdxs.length > 1 ? 's' : ''} selected</span>
+            <span style={{ fontWeight: 700, color: 'var(--color-text-primary)' }}>Total: £{repairPrice}</span>
+          </div>
+          <button className="btn-primary" style={{ width: '100%' }} onClick={nextFromRepair}>
+            Continue <i className="ti ti-arrow-right" aria-hidden="true" />
+          </button>
+        </div>
       )}
 
       <div className="step-body" style={navLock ? { pointerEvents: 'none', userSelect: 'none' } : {}}>
@@ -1241,12 +1245,9 @@ export default function App() {
 
   function StepRepair() {
     const repairs = getRepairs();
-    const [sel, setSel] = useState(st.repairIdxs);
     const showIphoneNote = repairs.some(r => r.name?.includes('Standard') || r.name?.includes('Premium'));
     const showGoogleNote = repairs.some(r => r.name?.includes('Original') || r.name?.includes('OLED'));
     const showIPadNote   = repairs.some(r => r.name === 'Screen + LCD');
-    const backStep = st.device === 'google' ? 2 : 3;
-    const selTotal = sel.reduce((s, i) => s + (repairs[i]?.price || 0), 0);
 
     function toggle(i) {
       const r = repairs[i];
@@ -1255,12 +1256,8 @@ export default function App() {
         go(80);
         return;
       }
-      setSel(prev => prev.includes(i) ? prev.filter(x => x !== i) : [...prev, i]);
-    }
-
-    function handleContinue() {
-      set({ repairIdxs: sel });
-      go(5);
+      const prev = st.repairIdxs;
+      set({ repairIdxs: prev.includes(i) ? prev.filter(x => x !== i) : [...prev, i] });
     }
 
     return (
@@ -1272,7 +1269,7 @@ export default function App() {
           {repairs.map((r, i) => {
             const isQ = r.quote && !r.price;
             const ps = isQ ? (r.priceStr || 'Get a quote') : r.priceStr ? r.priceStr : `£${r.price}`;
-            const isSel = sel.includes(i);
+            const isSel = st.repairIdxs.includes(i);
             return (
               <button key={i} className={`repair-item${isSel ? ' selected' : ''}`}
                 onClick={() => toggle(i)}>
@@ -1300,23 +1297,6 @@ export default function App() {
             );
           })}
         </div>
-        {sel.length > 0 && (
-          <div style={{
-            position: 'sticky', bottom: 0,
-            background: 'var(--color-background-primary)',
-            borderTop: '1px solid var(--border)',
-            padding: '12px 0 4px',
-            marginTop: 8, zIndex: 10,
-          }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 10, fontSize: 14, color: 'var(--color-text-secondary)' }}>
-              <span>{sel.length} repair{sel.length > 1 ? 's' : ''} selected</span>
-              <span style={{ fontWeight: 700, color: 'var(--color-text-primary)' }}>Total: £{selTotal}</span>
-            </div>
-            <button className="btn-primary" style={{ width: '100%' }} onClick={handleContinue}>
-              Continue <i className="ti ti-arrow-right" aria-hidden="true" />
-            </button>
-          </div>
-        )}
         <div className="disclaimer-box" style={{ marginTop: 16, minHeight: 80, visibility: (showIphoneNote || showGoogleNote || showIPadNote) ? 'visible' : 'hidden' }}>
           <div className="disclaimer-title">Screen options explained</div>
           <p className="disclaimer-text">
