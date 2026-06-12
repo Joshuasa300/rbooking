@@ -1247,17 +1247,6 @@ export default function App() {
     const showIPadNote   = repairs.some(r => r.name === 'Screen + LCD');
     const backStep = st.device === 'google' ? 2 : 3;
     const selTotal = sel.reduce((s, i) => s + (repairs[i]?.price || 0), 0);
-    const continueRef = React.useRef(null);
-
-    React.useEffect(() => {
-      if (sel.length > 0) {
-        // Wait one frame so React has painted the Continue button before measuring
-        const raf = requestAnimationFrame(() => {
-          window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
-        });
-        return () => cancelAnimationFrame(raf);
-      }
-    }, [sel.length]);
 
     function toggle(i) {
       const r = repairs[i];
@@ -1312,7 +1301,14 @@ export default function App() {
           })}
         </div>
         {sel.length > 0 && (
-          <div ref={continueRef} style={{ marginTop: 16 }}>
+          <div style={{
+            position: 'sticky', bottom: 0,
+            background: 'var(--color-background-primary)',
+            borderTop: '1px solid var(--color-border-primary)',
+            padding: '12px 0 4px',
+            marginTop: 8,
+            zIndex: 10,
+          }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 10, fontSize: 14, color: 'var(--color-text-secondary)' }}>
               <span>{sel.length} repair{sel.length > 1 ? 's' : ''} selected</span>
               <span style={{ fontWeight: 700, color: 'var(--color-text-primary)' }}>Total: £{selTotal}</span>
