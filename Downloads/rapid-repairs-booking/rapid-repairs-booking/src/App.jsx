@@ -1253,9 +1253,7 @@ export default function App() {
       if (sel.length > 0) {
         // Wait one frame so React has painted the Continue button before measuring
         const raf = requestAnimationFrame(() => {
-          const h = document.body.scrollHeight;
-          try { window.top.postMessage({ type: 'scrollToBottom', height: h }, '*'); } catch (_) {}
-          try { window.parent.postMessage({ type: 'scrollToBottom', height: h }, '*'); } catch (_) {}
+          window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
         });
         return () => cancelAnimationFrame(raf);
       }
