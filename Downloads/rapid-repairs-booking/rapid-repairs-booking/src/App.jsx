@@ -1317,8 +1317,8 @@ export default function App() {
         <div className="addr-pill">
           <i className="ti ti-map-pin" aria-hidden="true" style={{ fontSize: 16, flexShrink: 0, color: 'var(--color-text-tertiary)' }} />
           <div>
-            <strong style={{ color: 'var(--color-text-primary)' }}>193 Summers Lane, N12 0LA</strong> · Finchley<br />
-            <span style={{ fontSize: 12, color: 'var(--color-text-tertiary)' }}>Nearest stations: Arnos Grove, Finchley Central</span>
+            <strong style={{ color: 'var(--color-text-primary)' }}>Old Farm Road, N2 9RQ</strong> · Finchley<br />
+            <span style={{ fontSize: 12, color: 'var(--color-text-tertiary)' }}>Nearest stations: East Finchley, Finchley Central</span>
           </div>
         </div>
         {slotsLoading ? (
@@ -1363,7 +1363,7 @@ export default function App() {
           <div className="confirm-row"><span className="confirm-label">Slot</span><span className="confirm-val">{slot?.label} at {st.slot}</span></div>
           <div className="confirm-row"><span className="confirm-label">Payment</span><span className="confirm-val">Pay on arrival</span></div>
         </div>
-        <p className="success-sub">You'll receive a confirmation via SMS and email.<br /><br /><i className="ti ti-map-pin" aria-hidden="true" /> 193 Summers Lane, N12 0LA<br />Open 7 days · 24 hours</p>
+        <p className="success-sub">You'll receive a confirmation via SMS and email.<br /><br /><i className="ti ti-map-pin" aria-hidden="true" /> Old Farm Road, N2 9RQ<br />Open 7 days · 24 hours</p>
       </div>
     );
   }
@@ -1387,7 +1387,7 @@ export default function App() {
           <div className="confirm-row"><span className="confirm-label">Name</span><span className="confirm-val">{st.quoteForm.fname} {st.quoteForm.lname}</span></div>
           <div className="confirm-row"><span className="confirm-label">Contact</span><span className="confirm-val">{st.quoteForm.phone}</span></div>
         </div>
-        <p className="success-sub">We'll WhatsApp or call <strong>{st.quoteForm.phone}</strong> within 20 minutes with your quote.<br /><br /><i className="ti ti-map-pin" aria-hidden="true" /> 193 Summers Lane, N12 0LA<br />Open 7 days · 24 hours</p>
+        <p className="success-sub">We'll WhatsApp or call <strong>{st.quoteForm.phone}</strong> within 20 minutes with your quote.<br /><br /><i className="ti ti-map-pin" aria-hidden="true" /> Old Farm Road, N2 9RQ<br />Open 7 days · 24 hours</p>
       </div>
     );
   }
@@ -1404,7 +1404,7 @@ export default function App() {
           <div className="confirm-row"><span className="confirm-label">Name</span><span className="confirm-val">{st.otherForm.fname} {st.otherForm.lname}</span></div>
           <div className="confirm-row"><span className="confirm-label">Contact</span><span className="confirm-val">{st.otherForm.phone}</span></div>
         </div>
-        <p className="success-sub">We'll WhatsApp or call <strong>{st.otherForm.phone}</strong> within 20 minutes with a quote.<br /><br /><i className="ti ti-map-pin" aria-hidden="true" /> 193 Summers Lane, N12 0LA<br />Open 7 days · 24 hours</p>
+        <p className="success-sub">We'll WhatsApp or call <strong>{st.otherForm.phone}</strong> within 20 minutes with a quote.<br /><br /><i className="ti ti-map-pin" aria-hidden="true" /> Old Farm Road, N2 9RQ<br />Open 7 days · 24 hours</p>
       </div>
     );
   }

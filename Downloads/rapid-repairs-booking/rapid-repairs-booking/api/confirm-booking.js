@@ -99,8 +99,8 @@ function customerEmailHTML(booking) {
               <tr>
                 <td style="font-size:14px;color:#166534;line-height:1.6">
                   <strong>📍 Where to find us</strong><br>
-                  193 Summers Lane, Finchley, N12 0LA<br>
-                  <span style="color:#166534;opacity:.8">Nearest stations: Arnos Grove · Finchley Central</span>
+                  Old Farm Road, Finchley, N2 9RQ<br>
+                  <span style="color:#166534;opacity:.8">Nearest stations: East Finchley · Finchley Central</span>
                 </td>
               </tr>
             </table>
@@ -115,7 +115,7 @@ function customerEmailHTML(booking) {
         <tr>
           <td style="padding:16px 32px;border-top:1px solid #f0f0f0">
             <p style="margin:0;font-size:12px;color:#bbb;text-align:center">
-              Rapid Repairs · 193 Summers Lane, London N12 0LA · rapidrepairsldn.com
+              Rapid Repairs · Old Farm Road, London N2 9RQ · rapidrepairsldn.com
             </p>
           </td>
         </tr>
@@ -217,7 +217,7 @@ async function createCalendarEvent(booking) {
         `💳 Payment: ${payLabel}`,
         `🔖 Ref: ${ref}`,
         ``,
-        `📍 193 Summers Lane, N12 0LA`,
+        `📍 Old Farm Road, N2 9RQ`,
       ].join('\n'),
       start: { dateTime: startLocal, timeZone: 'Europe/London' },
       end:   { dateTime: endLocal,   timeZone: 'Europe/London' },
@@ -254,7 +254,7 @@ async function processBooking({ ref, device, repair, repairCost, slotDate, slotT
       ? `Fully paid - nothing more to pay.`
       : `Pay on arrival — £${repairCost} to pay on the day.`,
     ``,
-    `193 Summers Lane, Finchley N12 0LA`,
+    `Old Farm Road, Finchley N2 9RQ`,
   ].join('\n');
 
   const shopSMS = [
