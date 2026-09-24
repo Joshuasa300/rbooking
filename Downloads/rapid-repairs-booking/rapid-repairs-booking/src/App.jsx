@@ -1317,7 +1317,7 @@ export default function App() {
         <div className="addr-pill">
           <i className="ti ti-map-pin" aria-hidden="true" style={{ fontSize: 16, flexShrink: 0, color: 'var(--color-text-tertiary)' }} />
           <div>
-            <strong style={{ color: 'var(--color-text-primary)' }}>Old Farm Road, N2 9RQ</strong> · Finchley<br />
+            <strong style={{ color: 'var(--color-text-primary)' }}>Old Farm Road, N2 9RQ</strong> · East Finchley<br />
             <span style={{ fontSize: 12, color: 'var(--color-text-tertiary)' }}>Nearest stations: East Finchley, Finchley Central</span>
           </div>
         </div>

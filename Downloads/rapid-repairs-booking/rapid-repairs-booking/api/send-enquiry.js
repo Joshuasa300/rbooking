@@ -79,7 +79,7 @@ function customerEmailHTML({ ref, customer, device, repairType, brand, issue }) 
               </td>
               <td style="padding-left:12px">
                 <div style="color:#fff;font-size:18px;font-weight:700;line-height:1.2">Rapid Repairs</div>
-                <div style="color:#999;font-size:13px">Finchley · N12</div>
+                <div style="color:#999;font-size:13px">East Finchley · N2</div>
               </td>
             </tr></table>
           </td>
@@ -100,7 +100,7 @@ function customerEmailHTML({ ref, customer, device, repairType, brand, issue }) 
               <tr>
                 <td style="font-size:14px;color:#166534;line-height:1.6">
                   <strong>📍 Where to find us</strong><br>
-                  Old Farm Road, Finchley, N2 9RQ<br>
+                  Old Farm Road, East Finchley, N2 9RQ<br>
                   <span style="opacity:.8">Nearest stations: East Finchley · Finchley Central</span>
                 </td>
               </tr>

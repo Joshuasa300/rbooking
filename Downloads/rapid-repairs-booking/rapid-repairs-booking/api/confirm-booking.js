@@ -75,7 +75,7 @@ function customerEmailHTML(booking) {
                 </td>
                 <td style="padding-left:12px">
                   <div style="color:#fff;font-size:18px;font-weight:700;line-height:1.2">Rapid Repairs</div>
-                  <div style="color:#999;font-size:13px">Finchley · N12</div>
+                  <div style="color:#999;font-size:13px">East Finchley · N2</div>
                 </td>
               </tr>
             </table>
@@ -99,7 +99,7 @@ function customerEmailHTML(booking) {
               <tr>
                 <td style="font-size:14px;color:#166534;line-height:1.6">
                   <strong>📍 Where to find us</strong><br>
-                  Old Farm Road, Finchley, N2 9RQ<br>
+                  Old Farm Road, East Finchley, N2 9RQ<br>
                   <span style="color:#166534;opacity:.8">Nearest stations: East Finchley · Finchley Central</span>
                 </td>
               </tr>
@@ -254,7 +254,7 @@ async function processBooking({ ref, device, repair, repairCost, slotDate, slotT
       ? `Fully paid - nothing more to pay.`
       : `Pay on arrival — £${repairCost} to pay on the day.`,
     ``,
-    `Old Farm Road, Finchley N2 9RQ`,
+    `Old Farm Road, East Finchley N2 9RQ`,
   ].join('\n');
 
   const shopSMS = [
