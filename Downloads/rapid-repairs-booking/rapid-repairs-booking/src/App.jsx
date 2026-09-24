@@ -988,7 +988,7 @@ export default function App() {
       )}
 
       {st.step === 4 && st.repairIdxs.length > 0 && (
-        <div style={{ borderTop: '1px solid var(--border)', borderBottom: '1px solid var(--border)', padding: '10px 0 12px', marginBottom: 8 }}>
+        <div className="continue-bar">
           <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8, fontSize: 14, color: 'var(--color-text-secondary)' }}>
             <span>{st.repairIdxs.length} repair{st.repairIdxs.length > 1 ? 's' : ''} selected</span>
             <span style={{ fontWeight: 700, color: 'var(--color-text-primary)' }}>Total: £{repairPrice}</span>
