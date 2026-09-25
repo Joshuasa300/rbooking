@@ -6,9 +6,9 @@ export const DEPOSIT_POLICY = `If you miss your appointment and don't reschedule
 
 // ── Top-level categories ─────────────────────────────────────────────────────
 export const categories = [
-  { id: 'phone',  icon: '📱', name: 'Smartphone',    sub: 'iPhone, Samsung, Google…' },
-  { id: 'tablet', icon: '🖥️', name: 'Tablet / iPad', sub: 'iPad, Android tablets' },
-  { id: 'laptop', icon: '💻', name: 'Laptop',         sub: 'MacBook, Windows, Chrome' },
+  { id: 'phone',  icon: 'ti-device-mobile', name: 'Smartphone',    sub: 'iPhone, Samsung, Google…' },
+  { id: 'tablet', icon: 'ti-device-ipad', name: 'Tablet / iPad', sub: 'iPad, Android tablets' },
+  { id: 'laptop', icon: 'ti-device-laptop', name: 'Laptop',         sub: 'MacBook, Windows, Chrome' },
 ];
 
 // ── Devices per category ─────────────────────────────────────────────────────

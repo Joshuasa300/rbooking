@@ -469,38 +469,30 @@ function IPadSVG({ variant, selected }) {
 // ── Progress bar ──────────────────────────────────────────────────────────────
 function ProgressBar({ labels, current }) {
   return (
-    <div className="progress-wrap">
-      <div className="progress-bar">
-        {labels.map((l, i) => (
-          <React.Fragment key={l+i}>
-            <div className={`step-dot ${i < current ? 'done' : i === current ? 'active' : 'inactive'}`}>
-              {i < current ? <i className="ti ti-check" aria-hidden="true" style={{ fontSize: 10 }} /> : i + 1}
-            </div>
-            {i < labels.length - 1 && <div className={`step-line ${i < current ? 'done' : ''}`} />}
-          </React.Fragment>
-        ))}
-      </div>
-      <div className="step-labels">
-        {labels.map((l, i) => <span key={l+i} className={i === current ? 'active-label' : ''}>{l}</span>)}
-      </div>
+    <div className="steps" aria-label={`Step ${current + 1} of ${labels.length}: ${labels[current]}`}>
+      {labels.map((l, i) => (
+        <div key={l+i} className={i < current ? 'done' : i === current ? 'active' : ''}>
+          <i /><span>{l}</span>
+        </div>
+      ))}
     </div>
   );
 }
 
 // ── MacBook repair type cards ─────────────────────────────────────────────────
 const MB_CARDS = [
-  { id: 'screen',      ico: '🖥️', name: 'Screen',                    sub: 'MacBook Air / Pro', price: 'From £349' },
-  { id: 'battery',     ico: '🔋', name: 'Battery',                    sub: 'MacBook Air / Pro', price: 'From £119' },
-  { id: 'motherboard', ico: '🔧', name: 'Motherboard / water damage', sub: 'MacBook Air / Pro', price: 'Free quote' },
-  { id: 'other',       ico: '💬', name: 'Other repair',               sub: 'Keyboard, port, fan & more', price: 'Free quote' },
+  { id: 'screen',      ico: 'ti-device-laptop', name: 'Screen',                    sub: 'MacBook Air / Pro', price: 'From £349' },
+  { id: 'battery',     ico: 'ti-battery-2', name: 'Battery',                    sub: 'MacBook Air / Pro', price: 'From £119' },
+  { id: 'motherboard', ico: 'ti-cpu', name: 'Motherboard / water damage', sub: 'MacBook Air / Pro', price: 'Free quote' },
+  { id: 'other',       ico: 'ti-message-2', name: 'Other repair',               sub: 'Keyboard, port, fan & more', price: 'Free quote' },
 ];
 
 // ── Other laptop repair type cards ───────────────────────────────────────────
 const LT_CARDS = [
-  { id: 'screen',      ico: '🖥️', name: 'Screen replacement',        sub: 'HP, Asus, Lenovo, Dell & more', price: '£110–£239' },
-  { id: 'battery',     ico: '🔋', name: 'Battery replacement',        sub: 'All makes and models',          price: 'From £119' },
-  { id: 'motherboard', ico: '🔧', name: 'Motherboard / water damage', sub: 'Free diagnostic included',       price: 'Free quote' },
-  { id: 'other',       ico: '💬', name: 'Other repair',               sub: 'Keyboard, port, fan & more',    price: 'Free quote' },
+  { id: 'screen',      ico: 'ti-device-laptop', name: 'Screen replacement',        sub: 'HP, Asus, Lenovo, Dell & more', price: '£110–£239' },
+  { id: 'battery',     ico: 'ti-battery-2', name: 'Battery replacement',        sub: 'All makes and models',          price: 'From £119' },
+  { id: 'motherboard', ico: 'ti-cpu', name: 'Motherboard / water damage', sub: 'Free diagnostic included',       price: 'Free quote' },
+  { id: 'other',       ico: 'ti-message-2', name: 'Other repair',               sub: 'Keyboard, port, fan & more',    price: 'Free quote' },
 ];
 
 // iPad series / models
@@ -634,8 +626,17 @@ function StepDetails({ st, set, go, slots, repairPrice, repairsList, longestTime
 
   return (
     <div className="step-panel">
-      <p className="section-title">Your details</p>
+      <p className="section-title">Almost done</p>
       <p className="section-sub">We'll send your booking confirmation by SMS and email.</p>
+      <div className="sum-card" style={{ marginBottom: 10 }}>
+        <div className="sum-row"><span>Repair</span><span>{st.model || st.ipadMod} · {repairsList.map(r => r.name).join(', ')}</span></div>
+        <div className="sum-row"><span>When</span><span>{slots[st.dayIdx]?.label} at {st.slot}</span></div>
+        <div className="sum-row"><span>Total</span><b>£{repairPrice}</b></div>
+      </div>
+      <div className="due-box" style={{ marginBottom: 22 }}>
+        <div className="k">Nothing to pay today<small>Pay £{repairPrice} when you collect</small></div>
+        <div className="v">£0</div>
+      </div>
       <div className="form-row">
         <div className="form-group"><label className="form-label">First name</label><input type="text" placeholder="Joshua" value={form.fname} onChange={e => upd('fname', e.target.value)} /></div>
         <div className="form-group"><label className="form-label">Last name</label><input type="text" placeholder="Smith" value={form.lname} onChange={e => upd('lname', e.target.value)} /></div>
@@ -643,8 +644,8 @@ function StepDetails({ st, set, go, slots, repairPrice, repairsList, longestTime
       <div className="form-group"><label className="form-label">Phone</label><input type="tel" placeholder="07700 900 000" value={form.phone} onChange={e => upd('phone', e.target.value)} /></div>
       <div className="form-group"><label className="form-label">Email</label><input type="email" placeholder="you@email.com" value={form.email} onChange={e => upd('email', e.target.value)} /></div>
       {errMsg && <div className="error-msg">{errMsg}</div>}
-      <button className="btn-primary" style={{ width: '100%', marginTop: 8 }} onClick={handleConfirm} disabled={loading || !valid}>
-        {loading ? 'Confirming…' : 'Confirm booking'} {!loading && <i className="ti ti-arrow-right" aria-hidden="true" />}
+      <button className="btn-primary" style={{ marginTop: 8 }} onClick={handleConfirm} disabled={loading || !valid}>
+        {loading ? 'Booking…' : 'Book my repair'} {!loading && <i className="ti ti-arrow-right" aria-hidden="true" />}
       </button>
     </div>
   );
@@ -974,30 +975,23 @@ export default function App() {
   return (
     <div className="app">
       <PixelDefs />
-      {!isDone && st.step !== 91 && st.step !== 92 && (
-        <>
-          {getBackStep() !== null && (
-            <div style={{ padding: '12px 20px 0', marginBottom: '4px' }}>
-              <button className="btn-back-full" onClick={() => go(getBackStep())}>
+      <header className="app-head">
+        <div className="brand-row">
+          <img className="brand-logo" src="/logo.png" alt="" />
+          <div className="brand-name">Rapid Repairs<small>East Finchley · Open 24 hours, 7 days</small></div>
+          <div className="brand-proof"><b aria-hidden="true">★★★★★</b>100+ five-star reviews</div>
+        </div>
+        {!isDone && st.step !== 91 && st.step !== 92 && (
+          <>
+            <ProgressBar labels={labels} current={current} />
+            {getBackStep() !== null && (
+              <button className="back-link" onClick={() => go(getBackStep())}>
                 <i className="ti ti-arrow-left" aria-hidden="true" /> Back
               </button>
-            </div>
-          )}
-          <ProgressBar labels={labels} current={current} />
-        </>
-      )}
-
-      {st.step === 4 && st.repairIdxs.length > 0 && (
-        <div className="continue-bar">
-          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8, fontSize: 14, color: 'var(--color-text-secondary)' }}>
-            <span>{st.repairIdxs.length} repair{st.repairIdxs.length > 1 ? 's' : ''} selected</span>
-            <span style={{ fontWeight: 700, color: 'var(--color-text-primary)' }}>Total: £{repairPrice}</span>
-          </div>
-          <button className="btn-primary" style={{ width: '100%' }} onClick={nextFromRepair}>
-            Continue <i className="ti ti-arrow-right" aria-hidden="true" />
-          </button>
-        </div>
-      )}
+            )}
+          </>
+        )}
+      </header>
 
       <div className="step-body" style={navLock ? { pointerEvents: 'none', userSelect: 'none' } : {}}>
         {st.step === 0 && <StepCategory />}
@@ -1023,13 +1017,27 @@ export default function App() {
         {st.step === 92 && <StepOtherDone />}
       </div>
 
-      {!isDone && (
+      {st.step === 4 && st.repairIdxs.length > 0 ? (
+        <div className="continue-bar">
+          <div className="cb-tot">
+            <div>
+              <div className="cb-k">Pay today</div>
+              <div className="cb-v">£0<small>pay when you collect</small></div>
+            </div>
+            <div className="cb-r">
+              {st.repairIdxs.length} repair{st.repairIdxs.length > 1 ? 's' : ''}<br />
+              Total <b>£{repairPrice}</b>
+            </div>
+          </div>
+          <button className="btn-primary" onClick={nextFromRepair}>
+            {isQuoteRepair() ? 'Get my free quote' : 'Choose a time'} <i className="ti ti-arrow-right" aria-hidden="true" />
+          </button>
+        </div>
+      ) : !isDone && (
         <div className="trust-strip">
-          <span><i className="ti ti-star" aria-hidden="true" /> 100+ five-star reviews</span>
-          <span>·</span>
           <span><i className="ti ti-shield-check" aria-hidden="true" /> 90-day warranty</span>
-          <span>·</span>
           <span><i className="ti ti-bolt" aria-hidden="true" /> Same-day repairs</span>
+          <span><i className="ti ti-cash" aria-hidden="true" /> Pay when you collect</span>
         </div>
       )}
     </div>
@@ -1045,7 +1053,7 @@ export default function App() {
           {categories.map(c => (
             <button key={c.id} className="cat-card"
               onClick={() => { set({ cat: c.id, device: null, series: null, model: null, ipadSer: null, ipadMod: null, mbCard: null, pixelMod: null, repairIdxs: [] }); go(1); }}>
-              <span className="cat-icon">{c.icon}</span>
+              <i className={`ti ${c.icon} cat-icon`} aria-hidden="true" />
               <div className="cat-name">{c.name}</div>
               <div className="cat-sub">{c.sub}</div>
             </button>
@@ -1212,7 +1220,7 @@ export default function App() {
           {MB_CARDS.map(c => (
             <button key={c.id} className="mb-card"
               onClick={() => { set({ mbCard: c.id }); go(80); }}>
-              <div className="mb-card-ico">{c.ico}</div>
+              <i className={`ti ${c.ico} mb-card-ico`} aria-hidden="true" />
               <div className="mb-card-name">{c.name}</div>
               <div className="mb-card-sub">{c.sub}</div>
               <div className="mb-card-price">{c.price}</div>
@@ -1232,7 +1240,7 @@ export default function App() {
           {LT_CARDS.map(c => (
             <button key={c.id} className="mb-card"
               onClick={() => { set({ ltCard: c.id }); go(80); }}>
-              <div className="mb-card-ico">{c.ico}</div>
+              <i className={`ti ${c.ico} mb-card-ico`} aria-hidden="true" />
               <div className="mb-card-name">{c.name}</div>
               <div className="mb-card-sub">{c.sub}</div>
               <div className="mb-card-price">{c.price}</div>
@@ -1249,6 +1257,11 @@ export default function App() {
     const showGoogleNote = repairs.some(r => r.name?.includes('Original') || r.name?.includes('OLED'));
     const showIPadNote   = repairs.some(r => r.name === 'Screen + LCD');
 
+    // Priced screen options become side-by-side choices; everything else is an add-on list.
+    const screenIdxs = repairs.map((r, i) => i).filter(i => /^screen/i.test(repairs[i].name || '') && repairs[i].price);
+    const extraIdxs  = repairs.map((r, i) => i).filter(i => !screenIdxs.includes(i));
+    const hasQuote   = extraIdxs.some(i => repairs[i].quote && !repairs[i].price);
+
     function toggle(i) {
       const r = repairs[i];
       if (r.quote && !r.price) {
@@ -1257,54 +1270,114 @@ export default function App() {
         return;
       }
       const prev = st.repairIdxs;
+      if (screenIdxs.includes(i)) {
+        // Only one screen type at a time
+        const others = prev.filter(x => !screenIdxs.includes(x));
+        set({ repairIdxs: prev.includes(i) ? others : [...others, i] });
+        return;
+      }
       set({ repairIdxs: prev.includes(i) ? prev.filter(x => x !== i) : [...prev, i] });
     }
 
+    function screenLabel(name) {
+      return name.replace(/^screen\s*[–-]\s*/i, '') || name;
+    }
+    function screenTag(name) {
+      if (/standard/i.test(name)) return 'Recommended';
+      if (/premium|original/i.test(name)) return 'Closest to original';
+      return null;
+    }
+    function screenBlurb(name) {
+      if (/standard/i.test(name)) return 'Great value, with excellent clarity for everyday use.';
+      if (/premium/i.test(name))  return 'Deeper blacks, more accurate colour and better brightness.';
+      if (/original/i.test(name)) return 'OEM-matched panel, closest to factory quality.';
+      if (/oled/i.test(name))     return 'High-quality aftermarket panel at a lower price.';
+      return null;
+    }
+    const note = showIphoneNote ? null :
+      showGoogleNote ? 'Original screen uses an OEM-matched panel — closest to factory quality. OLED uses a high-quality aftermarket panel at a lower price — still excellent clarity.' :
+      showIPadNote ? 'Screen only replaces the outer glass/digitiser — ideal if your LCD looks fine. Screen + LCD replaces the full display assembly — needed for dark spots, colour bleed, or lines.' : null;
+
     return (
       <div className="step-panel">
-        <p className="section-title">{st.model || st.ipadMod}</p>
-        <p className="section-sub">Select one or more repairs. All prices include parts and labour.</p>
-        <div className="warranty-pill"><span className="pill-dot" /> <strong>Scroll down to see all repairs</strong></div>
-        <div className="repair-list">
-          {repairs.map((r, i) => {
-            const isQ = r.quote && !r.price;
-            const ps = isQ ? (r.priceStr || 'Get a quote') : r.priceStr ? r.priceStr : `£${r.price}`;
-            const isSel = st.repairIdxs.includes(i);
-            return (
-              <button key={i} className={`repair-item${isSel ? ' selected' : ''}`}
-                onClick={() => toggle(i)}>
-                <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10, flex: 1, minWidth: 0 }}>
-                  <div style={{ marginTop: 3, flexShrink: 0 }}>
+        <div className="ctx-line">
+          <span>For your <b>{st.model || st.ipadMod}</b></span>
+          {getBackStep() !== null && <button onClick={() => go(getBackStep())}>Change</button>}
+        </div>
+
+        {screenIdxs.length > 0 ? (
+          <>
+            <p className="section-title">{screenIdxs.length > 1 ? 'Choose your screen' : 'Screen repair'}</p>
+            <p className="section-sub">
+              Fitted while you wait. All prices include parts and labour.
+              {showIphoneNote && ' Not sure? Standard is perfect for most people.'}
+            </p>
+            <div className="screen-opts" role="group" aria-label="Screen options">
+              {screenIdxs.map(i => {
+                const r = repairs[i];
+                const sel = st.repairIdxs.includes(i);
+                const tag = screenIdxs.length > 1 ? screenTag(r.name) : null;
+                const blurb = screenBlurb(r.name);
+                return (
+                  <button key={i} className={`screen-opt${sel ? ' selected' : ''}`} aria-pressed={sel} onClick={() => toggle(i)}>
+                    <span className="radio" />
+                    <span>
+                      <span className="so-title">{screenLabel(r.name)}{tag && <span className="tag">{tag}</span>}</span>
+                      {blurb && <span className="so-sub">{blurb}</span>}
+                      <dl className="spec">
+                        {r.sub && <><dt>Panel</dt><dd>{r.sub}</dd></>}
+                        {r.time && <><dt>Time</dt><dd>{r.time}</dd></>}
+                      </dl>
+                    </span>
+                    <span className="so-price">{r.priceStr || `£${r.price}`}<small>pay on collection</small></span>
+                  </button>
+                );
+              })}
+            </div>
+            {note && (
+              <div className="disclaimer-box">
+                <div className="disclaimer-title">Screen options explained</div>
+                <p className="disclaimer-text">{note}</p>
+              </div>
+            )}
+          </>
+        ) : (
+          <>
+            <p className="section-title">What needs fixing?</p>
+            <p className="section-sub">Tick everything that applies. All prices include parts and labour.</p>
+          </>
+        )}
+
+        {extraIdxs.length > 0 && (
+          <>
+            {screenIdxs.length > 0 && <div className="section-label">While it's with us</div>}
+            <div className="extra-list">
+              {extraIdxs.map(i => {
+                const r = repairs[i];
+                const isQ = r.quote && !r.price;
+                const sel = st.repairIdxs.includes(i);
+                const meta = [r.sub, r.time].filter(Boolean).join(' · ');
+                return (
+                  <button key={i} className={`extra-row${sel ? ' selected' : ''}${isQ ? ' is-quote' : ''}`}
+                    aria-pressed={isQ ? undefined : sel} onClick={() => toggle(i)}>
+                    <span className="cbox" />
+                    <span className="xr-main">
+                      <span className="xr-name">{r.name}</span>
+                      {meta && <span className="xr-sub">{meta}</span>}
+                    </span>
                     {isQ
-                      ? <i className="ti ti-arrow-right" aria-hidden="true" style={{ fontSize: 14, color: 'var(--color-text-secondary)' }} />
-                      : <div style={{
-                          width: 18, height: 18, borderRadius: 4, border: `2px solid ${isSel ? '#111' : '#ccc'}`,
-                          background: isSel ? '#111' : 'transparent',
-                          display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
-                        }}>
-                          {isSel && <i className="ti ti-check" aria-hidden="true" style={{ fontSize: 11, color: '#fff' }} />}
-                        </div>
-                    }
-                  </div>
-                  <div style={{ minWidth: 0 }}>
-                    <div className="repair-name">{r.name}</div>
-                    {r.sub && <div className="repair-subtitle">{r.sub}</div>}
-                    {r.time && <div className="repair-time"><i className="ti ti-clock" aria-hidden="true" style={{ fontSize: 11 }} /> {r.time}</div>}
-                  </div>
-                </div>
-                <div className={`repair-price${isQ && !r.priceStr ? ' quote-pill' : ''}`}>{ps}</div>
-              </button>
-            );
-          })}
-        </div>
-        <div className="disclaimer-box" style={{ marginTop: 16, minHeight: 80, visibility: (showIphoneNote || showGoogleNote || showIPadNote) ? 'visible' : 'hidden' }}>
-          <div className="disclaimer-title">Screen options explained</div>
-          <p className="disclaimer-text">
-            {showIphoneNote ? SCREEN_DISCLAIMER :
-             showGoogleNote ? 'Original screen uses an OEM-matched panel — closest to factory quality. OLED uses a high-quality aftermarket panel at a lower price — still excellent clarity.' :
-             showIPadNote ? 'Screen only replaces the outer glass/digitiser — ideal if your LCD looks fine. Screen + LCD replaces the full display assembly — needed for dark spots, colour bleed, or lines.' : ''}
-          </p>
-        </div>
+                      ? <span className="xr-price quote">{r.priceStr || 'Free quote'} <i className="ti ti-chevron-right" aria-hidden="true" /></span>
+                      : <span className="xr-price">{r.priceStr || `£${r.price}`}</span>}
+                  </button>
+                );
+              })}
+            </div>
+          </>
+        )}
+
+        {hasQuote && (
+          <p className="fine-print"><b>Free quote</b> repairs: we'll WhatsApp or call you within 20 minutes with a price. You only pay if you go ahead.</p>
+        )}
       </div>
     );
   }
@@ -1312,35 +1385,42 @@ export default function App() {
   function StepTimeSlot() {
     return (
       <div className="step-panel">
-        <p className="section-title">Pick a time</p>
-        <p className="section-sub">Tap a day and slot to continue — we're open 7 days.</p>
-        <div className="addr-pill">
-          <i className="ti ti-map-pin" aria-hidden="true" style={{ fontSize: 16, flexShrink: 0, color: 'var(--color-text-tertiary)' }} />
-          <div>
-            <strong style={{ color: 'var(--color-text-primary)' }}>Old Farm Road, N2 9RQ</strong> · East Finchley<br />
-            <span style={{ fontSize: 12, color: 'var(--color-text-tertiary)' }}>Nearest stations: East Finchley, Finchley Central</span>
-          </div>
-        </div>
+        <p className="section-title">When can you drop it in?</p>
+        <p className="section-sub">
+          {getLongestRepairTime() ? `This repair takes about ${getLongestRepairTime()}. ` : ''}Wait with us or come back later.
+        </p>
         {slotsLoading ? (
-          <p className="section-sub" style={{ textAlign: 'center', padding: '2rem 0' }}>Checking availability…</p>
+          <p className="loading-note">Checking availability…</p>
         ) : (
           <>
-            <div className="day-tabs">
-              {SLOTS.map((s, i) => (
-                <button key={i} className={`day-tab ${st.dayIdx === i ? 'active' : ''}`}
-                  onClick={() => set({ dayIdx: i, slot: null })}>{s.label}</button>
-              ))}
+            <div className="day-tabs" role="tablist" aria-label="Day">
+              {SLOTS.map((s, i) => {
+                const [dw, dn] = s.label.split(' ');
+                return (
+                  <button key={i} role="tab" aria-selected={st.dayIdx === i} aria-label={s.label}
+                    className={`day-tab ${st.dayIdx === i ? 'active' : ''}`}
+                    onClick={() => set({ dayIdx: i, slot: null })}>
+                    <span className="dw">{dw}</span><span className="dn">{dn}</span>
+                  </button>
+                );
+              })}
             </div>
+            <div className="section-label">Available on {SLOTS[st.dayIdx].label}</div>
             <div className="time-grid">
               {SLOTS[st.dayIdx].times.length > 0
                 ? SLOTS[st.dayIdx].times.map(t => (
                     <button key={t} className={`time-slot ${st.slot === t ? 'selected' : ''}`}
                       onClick={() => { set({ slot: t }); go(6); }}>{t}</button>
                   ))
-                : <p className="no-slots">No slots — try another day</p>}
+                : <p className="no-slots">No slots left this day. Try another day.</p>}
             </div>
           </>
         )}
+        <div className="section-label">Where</div>
+        <div className="place-card">
+          <i className="ti ti-map-pin" aria-hidden="true" />
+          <div><b>Old Farm Road, East Finchley N2 9RQ</b><br /><span>Nearest stations: East Finchley · Finchley Central</span></div>
+        </div>
       </div>
     );
   }
@@ -1350,20 +1430,32 @@ export default function App() {
   // unmount them on every keystroke (which would close the mobile keyboard).
 
   function StepDone() {
-    const r = getSelectedRepair();
     const slot = SLOTS[st.dayIdx];
+    const repairNames = getSelectedRepairs().map(r => r.name).join(', ');
+    const time = getLongestRepairTime();
     return (
       <div className="step-panel success-wrap">
-        <p className="success-title">Booking confirmed!</p>
-        <div className="ref-badge">{st.bookingRef}</div>
-        <div className="confirm-card">
-          <div className="confirm-row"><span className="confirm-label">Device</span><span className="confirm-val">{st.model || st.ipadMod}</span></div>
-          <div className="confirm-row"><span className="confirm-label">Repair</span><span className="confirm-val">{r?.name}</span></div>
-          <div className="confirm-row"><span className="confirm-label">Repair cost</span><span className="confirm-val">£{repairPrice}</span></div>
-          <div className="confirm-row"><span className="confirm-label">Slot</span><span className="confirm-val">{slot?.label} at {st.slot}</span></div>
-          <div className="confirm-row"><span className="confirm-label">Payment</span><span className="confirm-val">Pay on arrival</span></div>
+        <div className="success-icon"><i className="ti ti-check" aria-hidden="true" /></div>
+        <p className="success-title">You're booked in</p>
+        <p className="success-sub">We've sent the details by SMS and email.</p>
+        <div className="ticket">
+          <div className="ticket-top"><span className="ref-badge">{st.bookingRef}</span><span className="ticket-when">{slot?.label} · {st.slot}</span></div>
+          <div className="sum-card">
+            <div className="sum-row"><span>Repair</span><span>{st.model || st.ipadMod} · {repairNames}</span></div>
+            <div className="sum-row"><span>Paid today</span><b>£0</b></div>
+            <div className="sum-row"><span>To pay on collection</span><b>£{repairPrice}</b></div>
+          </div>
         </div>
-        <p className="success-sub">You'll receive a confirmation via SMS and email.<br /><br /><i className="ti ti-map-pin" aria-hidden="true" /> Old Farm Road, N2 9RQ<br />Open 7 days · 24 hours</p>
+        <div className="place-card" style={{ marginTop: 10 }}>
+          <i className="ti ti-map-pin" aria-hidden="true" />
+          <div><b>Old Farm Road, East Finchley N2 9RQ</b><br /><span>Nearest stations: East Finchley · Finchley Central · Open 24 hours, 7 days</span></div>
+        </div>
+        <div className="section-label">What happens next</div>
+        <ol className="next-steps">
+          <li><span><b>Back up your phone</b> if you can. It's good practice before any repair.</span></li>
+          <li><span><b>Drop it in at {st.slot}</b> on {slot?.label}.</span></li>
+          <li><span><b>Collect and pay £{repairPrice}</b>{time ? `, usually ${time} later` : ''}.</span></li>
+        </ol>
       </div>
     );
   }
