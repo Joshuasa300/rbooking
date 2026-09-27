@@ -17,6 +17,7 @@
 const twilio = require('twilio');
 const { Resend } = require('resend');
 const { google } = require('googleapis');
+const { logBooking } = require('./_sheets-log');
 
 // ── SMS helper ─────────────────────────────────────────────────────────────
 function normaliseUKPhone(raw) {
@@ -268,21 +269,25 @@ async function processBooking({ ref, device, repair, repairCost, slotDate, slotT
 
   const booking = { ref, device, repair, repairCost, slotDate, slotTime, payMode, paidAmount, customer, phone, email, repairTime };
 
-  await Promise.all([
-    sendSMS(phone, customerSMS).catch(e => console.error('Customer SMS failed:', e.message)),
-    sendSMS(process.env.SHOP_PHONE, shopSMS).catch(e => console.error('Shop SMS failed:', e.message)),
+  const labels = ['Customer SMS', 'Shop SMS', 'Customer email', 'Shop email', 'Calendar'];
+  const results = await Promise.allSettled([
+    sendSMS(phone, customerSMS),
+    sendSMS(process.env.SHOP_PHONE, shopSMS),
     sendEmail({
       to: email,
       subject: `Booking confirmed — ${device} repair (${ref})`,
       html: customerEmailHTML(booking),
-    }).catch(e => console.error('Customer email failed:', e.message)),
+    }),
     sendEmail({
       to: process.env.SHOP_EMAIL,
       subject: `New booking: ${customer} — ${device} ${slotDate} at ${slotTime}`,
       html: shopEmailHTML(booking),
-    }).catch(e => console.error('Shop email failed:', e.message)),
-    createCalendarEvent(booking).catch(e => console.error('Calendar failed:', e.message)),
+    }),
+    createCalendarEvent(booking),
   ]);
+  results.forEach((r, i) => { if (r.status === 'rejected') console.error(`${labels[i]} failed:`, r.reason?.message); });
+
+  await logBooking(booking, results).catch(e => console.error('Sheet log failed:', e.message));
 }
 
 // ── HTTP handler — default export so Vercel can serve /api/confirm-booking ──

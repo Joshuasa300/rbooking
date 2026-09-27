@@ -8,6 +8,7 @@
 
 const twilio = require('twilio');
 const { Resend } = require('resend');
+const { logEnquiry } = require('./_sheets-log');
 
 function normaliseUKPhone(raw) {
   let n = raw.replace(/[\s\-().]/g, '');
@@ -144,19 +145,24 @@ module.exports = async (req, res) => {
   ].filter(Boolean).join('\n');
 
   try {
-    await Promise.all([
-      sendSMS(process.env.SHOP_PHONE, shopSMS).catch(e => console.error('Shop SMS failed:', e.message)),
+    const labels = ['Shop SMS', 'Shop email', 'Customer email'];
+    const results = await Promise.allSettled([
+      sendSMS(process.env.SHOP_PHONE, shopSMS),
       sendEmail({
         to: process.env.SHOP_EMAIL,
         subject: `New enquiry: ${customer} — ${device || 'device'}`,
         html: shopEmailHTML({ ref, customer, phone, email, device, repairType, brand, issue }),
-      }).catch(e => console.error('Shop email failed:', e.message)),
+      }),
       sendEmail({
         to: email,
         subject: `Enquiry received — Rapid Repairs (${ref})`,
         html: customerEmailHTML({ ref, customer, device, repairType, brand, issue }),
-      }).catch(e => console.error('Customer email failed:', e.message)),
+      }),
     ]);
+    results.forEach((r, i) => { if (r.status === 'rejected') console.error(`${labels[i]} failed:`, r.reason?.message); });
+
+    await logEnquiry({ ref, customer, phone, email, device, repairType, brand, issue }, results)
+      .catch(e => console.error('Sheet log failed:', e.message));
     res.status(200).json({ success: true });
   } catch (err) {
     console.error('Send enquiry error:', err);
