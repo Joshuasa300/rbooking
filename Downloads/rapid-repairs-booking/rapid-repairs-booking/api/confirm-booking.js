@@ -99,7 +99,7 @@ function customerEmailHTML(booking) {
               <tr>
                 <td style="font-size:14px;color:#166534;line-height:1.6">
                   <strong>📍 Where to find us</strong><br>
-                  Old Farm Road, East Finchley, N2 9RQ<br>
+                  N/A<br>
                   <span style="color:#166534;opacity:.8">Nearest stations: East Finchley · Finchley Central</span>
                 </td>
               </tr>
@@ -115,7 +115,7 @@ function customerEmailHTML(booking) {
         <tr>
           <td style="padding:16px 32px;border-top:1px solid #f0f0f0">
             <p style="margin:0;font-size:12px;color:#bbb;text-align:center">
-              Rapid Repairs · Old Farm Road, London N2 9RQ · rapidrepairsldn.com
+              Rapid Repairs · N/A · rapidrepairsldn.com
             </p>
           </td>
         </tr>
@@ -217,7 +217,7 @@ async function createCalendarEvent(booking) {
         `💳 Payment: ${payLabel}`,
         `🔖 Ref: ${ref}`,
         ``,
-        `📍 Old Farm Road, N2 9RQ`,
+        `📍 N/A`,
       ].join('\n'),
       start: { dateTime: startLocal, timeZone: 'Europe/London' },
       end:   { dateTime: endLocal,   timeZone: 'Europe/London' },
@@ -254,7 +254,7 @@ async function processBooking({ ref, device, repair, repairCost, slotDate, slotT
       ? `Fully paid - nothing more to pay.`
       : `Pay on arrival — £${repairCost} to pay on the day.`,
     ``,
-    `Old Farm Road, East Finchley N2 9RQ`,
+    `N/A`,
   ].join('\n');
 
   const shopSMS = [
