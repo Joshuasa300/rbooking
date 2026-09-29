@@ -632,46 +632,25 @@ function StepDetails({ st, set, go, slots, repairPrice, repairsList, longestTime
     }
   };
 
-  const [dayName, dayNum, monthName] = (slots[st.dayIdx]?.label || '').split(' ');
+  const [dayName = '', dayNum = '', monthName = ''] = (slots[st.dayIdx]?.label || '').split(' ');
   const deviceName = st.model || st.ipadMod || st.device;
 
   return (
     <div className="step-panel">
       <div className="booking-summary">
-        <div className="bs-head">
-          <span className="bs-label">Your booking</span>
-          <button type="button" className="bs-change" onClick={() => go(5)}>Change time</button>
+        <div className="bs-row">
+          <span className="bs-when">
+            <span className="bs-day">{dayName} {dayNum} {monthName}</span>
+            <span className="bs-time">{st.slot}</span>
+            {longestTime && <span className="bs-dur">· {longestTime}</span>}
+          </span>
+          <button type="button" className="bs-change" onClick={() => go(5)}>Change</button>
         </div>
-
-        <div className="bs-when">
-          <div className="bs-date" aria-hidden="true">
-            <span className="bs-date-day">{dayName}</span>
-            <span className="bs-date-num">{dayNum}</span>
-            <span className="bs-date-mon">{monthName}</span>
-          </div>
-          <div>
-            <div className="bs-time">{st.slot}</div>
-            <div className="bs-when-sub">
-              {slots[st.dayIdx]?.label}{longestTime ? ` · takes about ${longestTime}` : ''}
-            </div>
-          </div>
+        <div className="bs-row bs-row-main">
+          <span className="bs-what"><strong>{deviceName}</strong> · {repairsList.map(r => r.name).join(' + ')}</span>
+          <span className="bs-total">£{repairPrice}</span>
         </div>
-
-        <div className="bs-device">{deviceName}</div>
-        <ul className="bs-repairs">
-          {repairsList.map((r, i) => (
-            <li key={i}>
-              <span className="bs-repair-name">{r.name}{r.sub && <span className="bs-repair-sub">{r.sub}</span>}</span>
-              <span className="bs-repair-price">{r.priceStr || `£${r.price}`}</span>
-            </li>
-          ))}
-        </ul>
-        <div className="bs-total"><span>Total</span><span>£{repairPrice}</span></div>
-
-        <div className="bs-pay">
-          <span className="bs-pay-dot" aria-hidden="true" />
-          <span><strong>Nothing to pay today.</strong> Pay £{repairPrice} when you collect your {deviceName}.</span>
-        </div>
+        <div className="bs-pay"><span className="bs-pay-dot" aria-hidden="true" />Nothing to pay today · pay on collection</div>
       </div>
 
       <p className="section-title">Your details</p>

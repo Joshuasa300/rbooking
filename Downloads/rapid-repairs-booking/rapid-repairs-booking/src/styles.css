@@ -402,53 +402,29 @@ textarea { resize: vertical; min-height: 80px; }
 }
 .addr-pill strong { color: var(--text-primary); font-weight: 500; }
 
-/* ── Booking summary (details step) ─────────────────────────────────────── */
+/* ── Booking summary (details step, compact) ───────────────────────────── */
 .booking-summary {
   background: var(--surface);
   border: 0.5px solid var(--border);
-  border-radius: var(--radius-lg);
-  padding: 1rem 1.1rem 1.1rem;
-  margin-bottom: 1.5rem;
-  box-shadow: 0 1px 2px rgba(0,0,0,0.03), 0 6px 20px -12px rgba(0,0,0,0.12);
+  border-radius: var(--radius-md);
+  padding: 10px 14px;
+  margin-bottom: 1.1rem;
+  display: flex; flex-direction: column; gap: 6px;
 }
-.bs-head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 12px; }
-.bs-label { font-size: 11px; font-weight: 500; letter-spacing: .08em; text-transform: uppercase; color: var(--text-muted); }
+.bs-row { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
+.bs-when { display: flex; align-items: baseline; gap: 7px; flex-wrap: wrap; font-size: 13px; color: var(--text-secondary); }
+.bs-day { font-weight: 600; color: var(--text-primary); }
+.bs-time { font-family: var(--font-mono); font-weight: 500; font-size: 14px; color: var(--text-primary); }
+.bs-dur { font-size: 12px; color: var(--text-muted); }
 .bs-change {
-  background: none; border: 0; padding: 0; cursor: pointer;
-  font-family: var(--font); font-size: 12.5px; font-weight: 500; color: var(--text-primary);
+  background: none; border: 0; padding: 0; cursor: pointer; flex-shrink: 0;
+  font-family: var(--font); font-size: 12px; font-weight: 500; color: var(--text-secondary);
   text-decoration: underline; text-underline-offset: 3px;
 }
-
-.bs-when { display: flex; align-items: center; gap: 14px; padding-bottom: 14px; border-bottom: 0.5px solid var(--border); }
-.bs-date {
-  width: 56px; flex-shrink: 0; text-align: center;
-  border: 0.5px solid var(--border-strong); border-radius: var(--radius-md); overflow: hidden;
-  background: var(--surface);
-}
-.bs-date-day { display: block; background: var(--accent); color: var(--accent-fg); font-size: 10px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; padding: 3px 0; }
-.bs-date-num { display: block; font-size: 22px; font-weight: 600; line-height: 1; padding-top: 6px; }
-.bs-date-mon { display: block; font-size: 11px; color: var(--text-secondary); padding: 2px 0 6px; }
-.bs-time { font-family: var(--font-mono); font-size: 24px; font-weight: 500; line-height: 1.1; letter-spacing: -0.01em; }
-.bs-when-sub { font-size: 12.5px; color: var(--text-secondary); margin-top: 3px; }
-
-.bs-device { font-size: 15px; font-weight: 600; margin: 14px 0 6px; }
-.bs-repairs { list-style: none; }
-.bs-repairs li { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; padding: 7px 0; font-size: 14px; }
-.bs-repair-name { color: var(--text-primary); }
-.bs-repair-sub { display: block; font-size: 11.5px; color: var(--text-muted); margin-top: 1px; }
-.bs-repair-price { font-family: var(--font-mono); font-size: 14px; white-space: nowrap; }
-.bs-total {
-  display: flex; justify-content: space-between; align-items: baseline;
-  border-top: 0.5px solid var(--border); margin-top: 6px; padding-top: 12px;
-  font-size: 14px; font-weight: 600;
-}
-.bs-total span:last-child { font-family: var(--font-mono); font-size: 20px; font-weight: 500; }
-
-.bs-pay {
-  display: flex; align-items: flex-start; gap: 9px;
-  margin-top: 12px; padding: 10px 12px;
-  background: #f0f7eb; border-radius: var(--radius-sm);
-  font-size: 13px; line-height: 1.45; color: #2d5a0d;
-}
-.bs-pay strong { font-weight: 600; }
-.bs-pay-dot { width: 7px; height: 7px; border-radius: 50%; background: #3b6d11; flex-shrink: 0; margin-top: 6px; }
+.bs-change:hover { color: var(--text-primary); }
+.bs-row-main { align-items: center; padding-top: 6px; border-top: 0.5px solid var(--border); }
+.bs-what { font-size: 13.5px; color: var(--text-secondary); line-height: 1.4; min-width: 0; }
+.bs-what strong { font-weight: 600; color: var(--text-primary); }
+.bs-total { font-family: var(--font-mono); font-size: 18px; font-weight: 500; color: var(--text-primary); white-space: nowrap; }
+.bs-pay { display: flex; align-items: center; gap: 7px; font-size: 12px; color: #2d5a0d; }
+.bs-pay-dot { width: 6px; height: 6px; border-radius: 50%; background: #3b6d11; flex-shrink: 0; }
