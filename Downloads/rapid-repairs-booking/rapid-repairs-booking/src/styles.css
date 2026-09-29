@@ -428,3 +428,8 @@ textarea { resize: vertical; min-height: 80px; }
 .bs-total { font-family: var(--font-mono); font-size: 18px; font-weight: 500; color: var(--text-primary); white-space: nowrap; }
 .bs-pay { display: flex; align-items: center; gap: 7px; font-size: 12px; color: #2d5a0d; }
 .bs-pay-dot { width: 6px; height: 6px; border-radius: 50%; background: #3b6d11; flex-shrink: 0; }
+
+/* ── Screen options: the one not picked is greyed out ─────────────────── */
+.repair-item.greyed { opacity: .45; background: var(--bg); }
+.repair-item.greyed:hover { opacity: .7; border-color: var(--border); }
+.repair-switch { font-size: 11px; color: var(--text-secondary); margin-top: 3px; }

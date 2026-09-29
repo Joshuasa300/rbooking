@@ -1268,6 +1268,10 @@ export default function App() {
     const showGoogleNote = repairs.some(r => r.name?.includes('Original') || r.name?.includes('OLED'));
     const showIPadNote   = repairs.some(r => r.name === 'Screen + LCD');
 
+    // Priced screen options (e.g. Standard / Premium) are one-or-the-other
+    const screenIdxs = repairs.map((r, i) => i).filter(i => /^screen/i.test(repairs[i].name || '') && repairs[i].price);
+    const chosenScreen = screenIdxs.find(i => st.repairIdxs.includes(i));
+
     function toggle(i) {
       const r = repairs[i];
       if (r.quote && !r.price) {
@@ -1276,6 +1280,11 @@ export default function App() {
         return;
       }
       const prev = st.repairIdxs;
+      if (screenIdxs.includes(i) && !prev.includes(i)) {
+        // Picking a greyed-out screen swaps it for the chosen one
+        set({ repairIdxs: [...prev.filter(x => !screenIdxs.includes(x)), i] });
+        return;
+      }
       set({ repairIdxs: prev.includes(i) ? prev.filter(x => x !== i) : [...prev, i] });
     }
 
@@ -1289,8 +1298,10 @@ export default function App() {
             const isQ = r.quote && !r.price;
             const ps = isQ ? (r.priceStr || 'Get a quote') : r.priceStr ? r.priceStr : `£${r.price}`;
             const isSel = st.repairIdxs.includes(i);
+            const isGreyed = screenIdxs.includes(i) && chosenScreen !== undefined && chosenScreen !== i;
             return (
-              <button key={i} className={`repair-item${isSel ? ' selected' : ''}`}
+              <button key={i} className={`repair-item${isSel ? ' selected' : ''}${isGreyed ? ' greyed' : ''}`}
+                aria-pressed={isQ ? undefined : isSel}
                 onClick={() => toggle(i)}>
                 <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10, flex: 1, minWidth: 0 }}>
                   <div style={{ marginTop: 3, flexShrink: 0 }}>
@@ -1308,6 +1319,7 @@ export default function App() {
                   <div style={{ minWidth: 0 }}>
                     <div className="repair-name">{r.name}</div>
                     {r.sub && <div className="repair-subtitle">{r.sub}</div>}
+                    {isGreyed && <div className="repair-switch">Tap to switch to this screen instead</div>}
                     {r.time && <div className="repair-time"><i className="ti ti-clock" aria-hidden="true" style={{ fontSize: 11 }} /> {r.time}</div>}
                   </div>
                 </div>
