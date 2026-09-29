@@ -998,7 +998,10 @@ export default function App() {
           {getBackStep() !== null && (
             <div style={{ padding: '12px 20px 0', marginBottom: '4px' }}>
               <button className="btn-back-full" onClick={() => go(getBackStep())}>
-                <i className="ti ti-arrow-left" aria-hidden="true" /> Back
+                <svg className="btn-back-arrow" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+                  <path d="M16 10H4M9 4.5L3.5 10 9 15.5" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+                Back
               </button>
             </div>
           )}

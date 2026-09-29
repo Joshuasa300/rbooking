@@ -359,8 +359,17 @@ textarea { resize: vertical; min-height: 80px; }
 .model-year { font-size: 11px; color: var(--text-muted); }
 
 /* ── Back full-width button ─────────────────────────────────────────────── */
-.btn-back-full { width: 100%; background: transparent; border: 0.5px solid var(--border); border-radius: var(--radius-sm); padding: 12px 18px; font-size: 14px; color: var(--text-secondary); cursor: pointer; font-family: var(--font); transition: all .15s; }
-.btn-back-full:hover { background: var(--bg); border-color: var(--border-strong); }
+.btn-back-full {
+  width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px;
+  background: var(--surface); border: 1.5px solid var(--text-primary); border-radius: var(--radius-sm);
+  padding: 12px 18px; min-height: 46px;
+  font-size: 15px; font-weight: 600; color: var(--text-primary);
+  cursor: pointer; font-family: var(--font); transition: background .15s, color .15s;
+}
+.btn-back-full:hover { background: var(--text-primary); color: var(--accent-fg); }
+.btn-back-full:active { transform: translateY(1px); }
+.btn-back-full:focus-visible { outline: 3px solid #3b82f6; outline-offset: 2px; }
+.btn-back-arrow { width: 18px; height: 18px; flex-shrink: 0; }
 
 /* ── Deposit note ───────────────────────────────────────────────────────── */
 .deposit-note { display: flex; align-items: flex-start; gap: 8px; font-size: 12px; color: var(--text-muted); line-height: 1.5; padding: 8px 12px; background: var(--bg); border-radius: var(--radius-sm); border: 0.5px solid var(--border); margin-bottom: 1.1rem; }
