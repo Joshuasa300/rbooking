@@ -1047,9 +1047,9 @@ export default function App() {
 
       {!isDone && (
         <div className="trust-strip">
-          <span><i className="ti ti-star" aria-hidden="true" /> 100+ five-star reviews</span>
+          <span><i className="ti ti-star" aria-hidden="true" /> 150+ five-star reviews</span>
           <span>·</span>
-          <span><i className="ti ti-shield-check" aria-hidden="true" /> 90-day warranty</span>
+          <span><i className="ti ti-shield-check" aria-hidden="true" /> 6-month warranty</span>
           <span>·</span>
           <span><i className="ti ti-bolt" aria-hidden="true" /> Same-day repairs</span>
         </div>
@@ -1397,7 +1397,7 @@ export default function App() {
           <div className="confirm-row"><span className="confirm-label">Slot</span><span className="confirm-val">{slot?.label} at {st.slot}</span></div>
           <div className="confirm-row"><span className="confirm-label">Payment</span><span className="confirm-val">Pay on arrival</span></div>
         </div>
-        <p className="success-sub">You'll receive a confirmation via SMS and email.<br /><br /><i className="ti ti-map-pin" aria-hidden="true" /> Old Farm Road, N2 9RQ<br />Open 7 days · 24 hours</p>
+        <p className="success-sub">You'll receive a confirmation via SMS and email.<br /><br /><i className="ti ti-map-pin" aria-hidden="true" /> Old Farm Road, N2 9RQ<br />Mon–Sat 8am–9:30pm · Sun 10am–7pm</p>
       </div>
     );
   }
@@ -1421,7 +1421,7 @@ export default function App() {
           <div className="confirm-row"><span className="confirm-label">Name</span><span className="confirm-val">{st.quoteForm.fname} {st.quoteForm.lname}</span></div>
           <div className="confirm-row"><span className="confirm-label">Contact</span><span className="confirm-val">{st.quoteForm.phone}</span></div>
         </div>
-        <p className="success-sub">We'll WhatsApp or call <strong>{st.quoteForm.phone}</strong> within 20 minutes with your quote.<br /><br /><i className="ti ti-map-pin" aria-hidden="true" /> Old Farm Road, N2 9RQ<br />Open 7 days · 24 hours</p>
+        <p className="success-sub">We'll WhatsApp or call <strong>{st.quoteForm.phone}</strong> within 20 minutes with your quote.<br /><br /><i className="ti ti-map-pin" aria-hidden="true" /> Old Farm Road, N2 9RQ<br />Mon–Sat 8am–9:30pm · Sun 10am–7pm</p>
       </div>
     );
   }
@@ -1438,7 +1438,7 @@ export default function App() {
           <div className="confirm-row"><span className="confirm-label">Name</span><span className="confirm-val">{st.otherForm.fname} {st.otherForm.lname}</span></div>
           <div className="confirm-row"><span className="confirm-label">Contact</span><span className="confirm-val">{st.otherForm.phone}</span></div>
         </div>
-        <p className="success-sub">We'll WhatsApp or call <strong>{st.otherForm.phone}</strong> within 20 minutes with a quote.<br /><br /><i className="ti ti-map-pin" aria-hidden="true" /> Old Farm Road, N2 9RQ<br />Open 7 days · 24 hours</p>
+        <p className="success-sub">We'll WhatsApp or call <strong>{st.otherForm.phone}</strong> within 20 minutes with a quote.<br /><br /><i className="ti ti-map-pin" aria-hidden="true" /> Old Farm Road, N2 9RQ<br />Mon–Sat 8am–9:30pm · Sun 10am–7pm</p>
       </div>
     );
   }

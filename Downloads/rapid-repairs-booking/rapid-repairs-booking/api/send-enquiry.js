@@ -107,7 +107,7 @@ function customerEmailHTML({ ref, customer, device, repairType, brand, issue }) 
             </table>
 
             <p style="margin:0;font-size:13px;color:#999;line-height:1.6">
-              90-day warranty on all repairs · No fix, no fee<br>
+              6-month warranty on all repairs · No fix, no fee<br>
               Questions? Reply to this email or call us directly.
             </p>
           </td>
