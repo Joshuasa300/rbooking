@@ -7,6 +7,7 @@ import {
   modelRepairs, pixelRepairs, genericRepairs,
   getAvailableSlots,
 } from './data';
+import { pushEnhancedConversionData } from './utils/enhancedConversions';
 import './styles.css';
 
 
@@ -625,6 +626,7 @@ function StepDetails({ st, set, go, slots, repairPrice, repairsList, longestTime
       });
       const data = await res.json();
       if (!data.success) throw new Error(data.error || 'Booking failed');
+      pushEnhancedConversionData({ email: form.email, phone: form.phone });
       set({ step: 90, bookingRef: ref, details: form });
     } catch (err) {
       setErrMsg(err.message || 'Something went wrong. Please try again.');
