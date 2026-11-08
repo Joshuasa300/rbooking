@@ -1341,6 +1341,11 @@ export default function App() {
              showIPadNote ? 'Screen only replaces the outer glass/digitiser — ideal if your LCD looks fine. Screen + LCD replaces the full display assembly — needed for dark spots, colour bleed, or lines.' : ''}
           </p>
         </div>
+        {st.repairIdxs.length > 0 && (
+          <button className="btn-primary" style={{ width: '100%', marginTop: 16 }} onClick={nextFromRepair}>
+            Continue · £{repairPrice} <i className="ti ti-arrow-right" aria-hidden="true" />
+          </button>
+        )}
       </div>
     );
   }
