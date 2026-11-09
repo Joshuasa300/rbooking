@@ -752,14 +752,16 @@ function StepQuoteForm({ st, set, go }) {
 }
 
 function StepOtherForm({ st, set, go }) {
-  const titles = { other_phone: 'Other smartphone', android_tab: 'Android tablet', macbook: 'MacBook', other_laptop: 'Other laptop' };
-  const subs   = { other_phone: 'We repair Sony, OnePlus, Motorola, Huawei, Nokia and more.', android_tab: 'We repair Samsung, Lenovo, Huawei tablets and more.', other_laptop: 'HP, Asus, Lenovo, Dell, Chromebook and more.' };
+  const titles = { other_phone: 'Other smartphone', android_tab: 'Android tablet', macbook: 'MacBook', other_laptop: 'Other laptop', samsung: 'Other Samsung model', google: 'Other Pixel model' };
+  const subs   = { other_phone: 'We repair Sony, OnePlus, Motorola, Huawei, Nokia and more.', android_tab: 'We repair Samsung, Lenovo, Huawei tablets and more.', other_laptop: 'HP, Asus, Lenovo, Dell, Chromebook and more.', samsung: "Can't see your model? Tell us which one and we'll send you a price.", google: "Can't see your model? Tell us which one and we'll send you a price." };
+  // Reached from the "Other model" tile on the Samsung / Pixel model grids: the model is required.
+  const isOtherModel = st.device === 'samsung' || st.device === 'google';
   const [form, setForm] = useState(st.otherForm);
   const [sending, setSending] = useState(false);
-  const valid = form.fname && form.lname && form.phone && form.email && form.issue;
+  const valid = form.fname && form.lname && form.phone && form.email && form.issue && (!isOtherModel || form.brand);
   const upd = (k, v) => { const u = { ...form, [k]: v }; setForm(u); set({ otherForm: u }); };
 
-  const deviceLabels = { other_phone: 'Other smartphone', android_tab: 'Android tablet', macbook: 'MacBook', other_laptop: 'Other laptop' };
+  const deviceLabels = { other_phone: 'Other smartphone', android_tab: 'Android tablet', macbook: 'MacBook', other_laptop: 'Other laptop', samsung: 'Samsung (model not listed)', google: 'Google Pixel (model not listed)' };
 
   const handleSend = async () => {
     if (!valid || sending) return;
@@ -799,10 +801,17 @@ function StepOtherForm({ st, set, go }) {
       </div>
       <div className="form-group"><label className="form-label">Phone</label><input type="tel" placeholder="07700 900 000" value={form.phone} onChange={e => upd('phone', e.target.value)} /></div>
       <div className="form-group"><label className="form-label">Email</label><input type="email" placeholder="you@email.com" value={form.email} onChange={e => upd('email', e.target.value)} /></div>
-      <div className="form-group">
-        <label className="form-label">Brand & model <span style={{ color: 'var(--color-text-tertiary)', fontSize: 12 }}>(optional)</span></label>
-        <input type="text" placeholder="e.g. Sony Xperia 1 V" value={form.brand} onChange={e => upd('brand', e.target.value)} />
-      </div>
+      {isOtherModel ? (
+        <div className="form-group">
+          <label className="form-label">Your model</label>
+          <input type="text" placeholder={st.device === 'google' ? 'e.g. Pixel 6a' : 'e.g. Galaxy A15'} value={form.brand} onChange={e => upd('brand', e.target.value)} />
+        </div>
+      ) : (
+        <div className="form-group">
+          <label className="form-label">Brand & model <span style={{ color: 'var(--color-text-tertiary)', fontSize: 12 }}>(optional)</span></label>
+          <input type="text" placeholder="e.g. Sony Xperia 1 V" value={form.brand} onChange={e => upd('brand', e.target.value)} />
+        </div>
+      )}
       <div className="form-group">
         <label className="form-label">Describe the issue</label>
         <textarea placeholder="e.g. Cracked screen, won't charge, water damage…" value={form.issue} onChange={e => upd('issue', e.target.value)} rows={3} />
@@ -954,6 +963,7 @@ export default function App() {
   function getBackStep() {
     const { step, device } = st;
     if (step === 0 || step >= 90) return null;
+    if (step === 81) return device === 'google' ? 2 : 3;
     if (step === 80) return (device === 'macbook' || device === 'other_laptop') ? 2 : 4;
     if (step === 6) return 5;
     if (step === 5) return 4;
@@ -966,6 +976,7 @@ export default function App() {
 
   function getProgressLabels() {
     const { device } = st;
+    if (st.step === 81) return ['Device', 'Details'];
     if (device === 'macbook' || device === 'other_laptop') return ['Device', 'Repair type', 'Quote'];
     if (device === 'other_phone' || device === 'android_tab') return ['Device', 'Details'];
     if (isQuoteRepair() || st.step === 80) return ['Device', 'Repair', 'Quote'];
@@ -974,7 +985,7 @@ export default function App() {
 
   function getProgressStep() {
     const { device, step } = st;
-    if (step === 80 || step >= 90) return getProgressLabels().length - 1;
+    if (step === 80 || step === 81 || step >= 90) return getProgressLabels().length - 1;
     if (device === 'macbook' || device === 'other_laptop') return step <= 1 ? 0 : 1;
     if (device === 'other_phone' || device === 'android_tab') return step <= 1 ? 0 : 1;
     // internal: 0=cat 1=device 2=series 3=model 4=repair 5=time 6=pay → mapped to 4 display steps
@@ -1042,6 +1053,7 @@ export default function App() {
         {st.step === 5 && <StepTimeSlot />}
         {st.step === 6 && <StepDetails st={st} set={set} go={go} slots={SLOTS} repairPrice={repairPrice} repairsList={getSelectedRepairs()} longestTime={getLongestRepairTime()} />}
         {st.step === 80 && <StepQuoteForm st={st} set={set} go={go} />}
+        {st.step === 81 && <StepOtherForm st={st} set={set} go={go} />}
         {st.step === 90 && <StepDone />}
         {st.step === 91 && <StepQuoteDone />}
         {st.step === 92 && <StepOtherDone />}
@@ -1142,12 +1154,27 @@ export default function App() {
     );
   }
 
+  // First tile on the Samsung / Pixel model grids, for models we don't list.
+  function OtherModelCard({ iconHeight }) {
+    return (
+      <button className="model-card model-card-other"
+        onClick={() => { set({ model: null, pixelMod: null, repairIdxs: [] }); go(81); }}>
+        <div className="other-model-icon" style={{ height: iconHeight }}>
+          <span><i className="ti ti-plus" aria-hidden="true" /></span>
+        </div>
+        <div className="model-name">Other model</div>
+        <div className="model-year">Not listed? Tap here</div>
+      </button>
+    );
+  }
+
   function StepPixelGrid() {
     return (
       <div className="step-panel">
         <p className="section-title">Google Pixel</p>
         <p className="section-sub">Tap your model to see repair prices.</p>
         <div className="model-grid">
+          <OtherModelCard iconHeight={88} />
           {PIXEL_MODELS.map(m => (
             <button key={m.name} className="model-card"
               onClick={() => { set({ pixelMod: m.name, model: m.name, repairIdxs: [] }); go(4); }}>
@@ -1210,6 +1237,7 @@ export default function App() {
         <p className="section-title">Select your model</p>
         <p className="section-sub">Tap to see exact repair prices.</p>
         <div className="model-grid">
+          {isSamsung && <OtherModelCard iconHeight={80} />}
           {models.map(m => (
             <button key={m.name} className="model-card"
               onClick={() => { set({ model: m.name, repairIdxs: [] }); go(4); }}>
